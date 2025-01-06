@@ -1150,8 +1150,12 @@ static cell_t smn_KeyValuesToString(IPluginContext *pContext, const cell_t *para
 	char* outStr;
 	pContext->LocalToString(params[2], &outStr);
 	size_t maxlen = static_cast<size_t>(params[3]);
-	
+
+#if SOURCE_ENGINE == SE_CSSO
+	buffer.GetStringManualCharCount(outStr, maxlen);
+#else
 	buffer.GetString(outStr, maxlen);
+#endif
 	return buffer.TellPut();
 }
 

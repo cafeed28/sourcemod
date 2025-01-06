@@ -55,7 +55,7 @@
 
 SH_DECL_HOOK6(IServerGameDLL, LevelInit, SH_NOATTRIB, false, bool, const char *, const char *, const char *, const char *, bool, bool);
 SH_DECL_HOOK0_void(IServerGameDLL, LevelShutdown, SH_NOATTRIB, false);
-#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 SH_DECL_HOOK1_void_vafmt(IVEngineServer, ClientCommand, SH_NOATTRIB, 0, edict_t *);
 #endif
 #if defined CLIENTVOICE_HOOK_SUPPORT
@@ -326,7 +326,7 @@ bool SDKTools::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool
 #endif
 	GET_V_IFACE_ANY(GetEngineFactory, soundemitterbase, ISoundEmitterSystemBase, SOUNDEMITTERSYSTEM_INTERFACE_VERSION);
 
-#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	SH_ADD_HOOK(IVEngineServer, ClientCommand, engine, SH_MEMBER(this, &SDKTools::OnSendClientCommand), false);
 #endif
 #if defined CLIENTVOICE_HOOK_SUPPORT
@@ -341,7 +341,7 @@ bool SDKTools::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool
 
 bool SDKTools::SDK_OnMetamodUnload(char *error, size_t maxlen)
 {
-#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	SH_REMOVE_HOOK(IVEngineServer, ClientCommand, engine, SH_MEMBER(this, &SDKTools::OnSendClientCommand), false);
 #endif
 #if defined CLIENTVOICE_HOOK_SUPPORT
@@ -551,7 +551,7 @@ void SDKTools::OnClientConnected(int client)
 }
 #endif
 
-#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 void SDKTools::OnSendClientCommand(edict_t *pPlayer, const char *szFormat)
 {
 	// Due to legacy code, CS:S and CS:GO still sends "name \"newname\"" to the

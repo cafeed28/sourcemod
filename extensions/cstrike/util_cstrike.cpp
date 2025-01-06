@@ -416,31 +416,6 @@ const char *GetWeaponNameFromClassname(const char *weapon)
 
 const char *GetTranslatedWeaponAlias(const char *weapon)
 {
-#if SOURCE_ENGINE != SE_CSGO
-
-	static ICallWrapper *pWrapper = NULL;
-
-	if (!pWrapper)
-	{
-		REGISTER_ADDR("GetTranslatedWeaponAlias", weapon,
-			PassInfo pass[1]; \
-			PassInfo retpass; \
-			pass[0].flags = PASSFLAG_BYVAL; \
-			pass[0].type = PassType_Basic; \
-			pass[0].size = sizeof(const char *); \
-			retpass.flags = PASSFLAG_BYVAL; \
-			retpass.type = PassType_Basic; \
-			retpass.size = sizeof(const char *); \
-			pWrapper = g_pBinTools->CreateCall(addr, CallConv_Cdecl, &retpass, pass, 1))
-	}
-
-	ArgBuffer<const char *> vstk(GetWeaponNameFromClassname(weapon));
-
-	const char *alias = nullptr;
-	pWrapper->Execute(vstk, &alias);
-
-	return alias;
-#else //this should work for both games maybe replace both?
 	static const char *szAliases[] =
 	{
 		"cv47", "ak47",
@@ -466,7 +441,6 @@ const char *GetTranslatedWeaponAlias(const char *weapon)
 	}
 
 	return  GetWeaponNameFromClassname(weapon);
-#endif
 }
 
 int AliasToWeaponID(const char *weapon)

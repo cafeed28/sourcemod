@@ -41,6 +41,11 @@
 		"engine"	"csgo"
 	}
 	
+	"engine.csso.txt"
+	{
+		"engine"	"csso"
+	}
+	
 	"engine.ep2v.txt"
 	{
 		"engine"	"orangebox_valve"

@@ -32,6 +32,14 @@
 #include "extension.h"
 #include "timeleft.h"
 
+#if SOURCE_ENGINE == SE_CSGO
+#define Game_Commencing 16
+#elif SOURCE_ENGINE == SE_CSSO
+#define Game_Commencing 8
+#else
+#define Game_Commencing 15
+#endif
+
 TimeLeftEvents g_TimeLeftEvents;
 bool get_new_timeleft_offset = false;
 bool round_end_found = false;
@@ -77,11 +85,7 @@ void TimeLeftEvents::FireGameEvent(IGameEvent *event)
 	}
 	else if (strcmp(name, "round_end") == 0)
 	{
-#if SOURCE_ENGINE == SE_CSGO
-		if (event->GetInt("reason") == 16)
-#else
-		if (event->GetInt("reason") == 15)
-#endif
+		if (event->GetInt("reason") == Game_Commencing)
 		{
 			get_new_timeleft_offset = true;
 		}

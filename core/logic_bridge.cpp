@@ -377,6 +377,8 @@ void UTIL_ConsolePrint(const char *fmt, ...)
 #define GAMEFIX "2.doi"
 #elif SOURCE_ENGINE == SE_CSGO
 #define GAMEFIX "2.csgo"
+#elif SOURCE_ENGINE == SE_CSSO
+#define GAMEFIX "2.csso"
 #elif SOURCE_ENGINE == SE_CONTAGION
 #define GAMEFIX "2.contagion"
 #elif SOURCE_ENGINE == SE_PVKII
@@ -510,6 +512,8 @@ const char *CoreProviderImpl::GetSourceEngineName()
 	return "pvkii";
 #elif SOURCE_ENGINE == SE_MCV
 	return "mcv";
+#elif SOURCE_ENGINE == SE_CSSO
+	return "csso";
 #endif
 }
 

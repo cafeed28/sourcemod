@@ -161,16 +161,19 @@ static cell_t CS_RespawnPlayer(IPluginContext *pContext, const cell_t *params)
 
 static cell_t CS_SwitchTeam(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE != SE_CSGO || !defined(WIN32)
+#if SOURCE_ENGINE == SE_CSSO
 	static ICallWrapper *pWrapper = NULL;
 	if (!pWrapper)
 	{
 		REGISTER_NATIVE_ADDR("SwitchTeam", 
-			PassInfo pass[1]; \
+			PassInfo pass[2]; \
 			pass[0].flags = PASSFLAG_BYVAL; \
 			pass[0].size = sizeof(int); \
 			pass[0].type = PassType_Basic; \
-			pWrapper = g_pBinTools->CreateCall(addr, CallConv_ThisCall, NULL, pass, 1))
+			pass[1].flags = PASSFLAG_BYVAL; \
+			pass[1].size = sizeof(bool); \
+			pass[1].type = PassType_Basic; \
+			pWrapper = g_pBinTools->CreateCall(addr, CallConv_ThisCall, NULL, pass, 2))
 	}
 
 	CBaseEntity *pEntity;
@@ -179,7 +182,7 @@ static cell_t CS_SwitchTeam(IPluginContext *pContext, const cell_t *params)
 		return pContext->ThrowNativeError("Client index %d is not valid", params[1]);
 	}
 
-	ArgBuffer<CBaseEntity*, int> vstk(pEntity, params[2]);
+	ArgBuffer<CBaseEntity*, int, bool> vstk(pEntity, params[2], params[3]);
 
 	pWrapper->Execute(vstk, NULL);
 #else
@@ -233,10 +236,6 @@ static cell_t CS_DropWeapon(IPluginContext *pContext, const cell_t *params)
 			pass[0].size  = sizeof(CBaseEntity *); \
 			pass[1].flags = PASSFLAG_BYVAL; \
 			pass[1].type  = PassType_Basic; \
-			pass[1].size  = sizeof(bool); \
-			pass[2].flags = PASSFLAG_BYVAL; \
-			pass[2].type  = PassType_Basic; \
-			pass[2].size  = sizeof(bool); \
 			pWrapper = g_pBinTools->CreateCall(addr, CallConv_ThisCall, NULL, pass, 3))
 	}
 
@@ -273,11 +272,7 @@ static cell_t CS_DropWeapon(IPluginContext *pContext, const cell_t *params)
 	if (params[4] == 1 && g_pCSWeaponDropDetoured)
 		g_pIgnoreCSWeaponDropDetour = true;
 
-#if SOURCE_ENGINE == SE_CSGO
-	ArgBuffer<CBaseEntity*, CBaseEntity*, bool, bool> vstk(pEntity, pWeapon, !!params[3], false);
-#else
-	ArgBuffer<CBaseEntity*, CBaseEntity*, bool, bool> vstk(pEntity, pWeapon, false, !!params[3]);
-#endif
+	ArgBuffer<CBaseEntity*, CBaseEntity*, bool> vstk(pEntity, pWeapon, !!params[3]);
 
 	pWrapper->Execute(vstk, NULL);
 	return 1;
@@ -303,11 +298,7 @@ static cell_t CS_TerminateRound(IPluginContext *pContext, const cell_t *params)
 
 	int reason = params[2];
 	
-#if SOURCE_ENGINE == SE_CSGO
-	reason++;
-#endif
-	
-#if SOURCE_ENGINE == SE_CSS
+#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSSO
 	static ICallWrapper *pWrapper = NULL;
 
 	if (!pWrapper)
@@ -678,7 +669,7 @@ static inline T *GetPlayerVarAddressOrError(const char *pszGamedataName, IPlugin
 		typedescription_t *td = gamehelpers->FindInDataMap(pMap, pszBaseVar);
 		if (td)
 		{
-#if SOURCE_ENGINE >= SE_LEFT4DEAD
+#if SOURCE_ENGINE >= SE_LEFT4DEAD && SOURCE_ENGINE != SE_CSSO
 			interimOffset = td->fieldOffset;
 #else
 			interimOffset = td->fieldOffset[TD_OFFSET_NORMAL];
@@ -875,7 +866,7 @@ static cell_t CS_GetMVPCount(IPluginContext *pContext, const cell_t *params)
 
 static cell_t CS_SetClientContributionScore(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	return SetPlayerVar<int>(pContext, params, "CScore");
 #else
 	return pContext->ThrowNativeError("SetClientContributionScore is not supported on this game");
@@ -884,7 +875,7 @@ static cell_t CS_SetClientContributionScore(IPluginContext *pContext, const cell
 
 static cell_t CS_GetClientContributionScore(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	return GetPlayerVar<int>(pContext, params, "CScore");
 #else
 	return pContext->ThrowNativeError("GetClientContributionScore is not supported on this game");
@@ -893,7 +884,7 @@ static cell_t CS_GetClientContributionScore(IPluginContext *pContext, const cell
 
 static cell_t CS_SetClientAssists(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	return SetPlayerVar<int>(pContext, params, "Assists");
 #else
 	return pContext->ThrowNativeError("SetClientAssists is not supported on this game");
@@ -902,7 +893,7 @@ static cell_t CS_SetClientAssists(IPluginContext *pContext, const cell_t *params
 
 static cell_t CS_GetClientAssists(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	return GetPlayerVar<int>(pContext, params, "Assists");
 #else
 	return pContext->ThrowNativeError("GetClientAssists is not supported on this game");
