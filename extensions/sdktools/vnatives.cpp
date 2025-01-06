@@ -952,6 +952,7 @@ static cell_t FindEntityByClassname(IPluginContext *pContext, const cell_t *para
 	|| SOURCE_ENGINE == SE_DODS    \
 	|| SOURCE_ENGINE == SE_HL2DM   \
 	|| SOURCE_ENGINE == SE_CSS     \
+	|| SOURCE_ENGINE == SE_CSSO    \
 	|| SOURCE_ENGINE == SE_BMS     \
 	|| SOURCE_ENGINE == SE_SDK2013 \
 	|| SOURCE_ENGINE == SE_BLADE   \

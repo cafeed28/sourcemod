@@ -84,7 +84,7 @@ SH_DECL_HOOK2_void(IServerGameClients, ClientCommandKeyValues, SH_NOATTRIB, 0, e
 
 SH_DECL_HOOK3_void(IServerGameDLL, ServerActivate, SH_NOATTRIB, 0, edict_t *, int, int);
 
-#if SOURCE_ENGINE >= SE_LEFT4DEAD
+#if SOURCE_ENGINE >= SE_LEFT4DEAD && SOURCE_ENGINE != SE_CSSO
 SH_DECL_HOOK1_void(IServerGameDLL, ServerHibernationUpdate, SH_NOATTRIB, 0, bool);
 #elif SOURCE_ENGINE > SE_EYE // 2013/orangebox, but not original orangebox.
 SH_DECL_HOOK1_void(IServerGameDLL, SetServerHibernation, SH_NOATTRIB, 0, bool);
@@ -176,7 +176,7 @@ void PlayerManager::OnSourceModAllInitialized()
 #endif
 	SH_ADD_HOOK(IServerGameClients, ClientSettingsChanged, serverClients, SH_MEMBER(this, &PlayerManager::OnClientSettingsChanged), true);
 	SH_ADD_HOOK(IServerGameDLL, ServerActivate, gamedll, SH_MEMBER(this, &PlayerManager::OnServerActivate), true);
-#if SOURCE_ENGINE >= SE_LEFT4DEAD
+#if SOURCE_ENGINE >= SE_LEFT4DEAD && SOURCE_ENGINE != SE_CSSO
 	SH_ADD_HOOK(IServerGameDLL, ServerHibernationUpdate, gamedll, SH_MEMBER(this, &PlayerManager::OnServerHibernationUpdate), true);
 #elif SOURCE_ENGINE > SE_EYE // 2013/orangebox, but not original orangebox.
 	SH_ADD_HOOK(IServerGameDLL, SetServerHibernation, gamedll, SH_MEMBER(this, &PlayerManager::OnServerHibernationUpdate), true);
@@ -233,7 +233,7 @@ void PlayerManager::OnSourceModShutdown()
 #endif
 	SH_REMOVE_HOOK(IServerGameClients, ClientSettingsChanged, serverClients, SH_MEMBER(this, &PlayerManager::OnClientSettingsChanged), true);
 	SH_REMOVE_HOOK(IServerGameDLL, ServerActivate, gamedll, SH_MEMBER(this, &PlayerManager::OnServerActivate), true);
-#if SOURCE_ENGINE >= SE_LEFT4DEAD
+#if SOURCE_ENGINE >= SE_LEFT4DEAD && SOURCE_ENGINE != SE_CSSO
 	SH_REMOVE_HOOK(IServerGameDLL, ServerHibernationUpdate, gamedll, SH_MEMBER(this, &PlayerManager::OnServerHibernationUpdate), true);
 #elif SOURCE_ENGINE > SE_EYE // 2013/orangebox, but not original orangebox.
 	SH_REMOVE_HOOK(IServerGameDLL, SetServerHibernation, gamedll, SH_MEMBER(this, &PlayerManager::OnServerHibernationUpdate), true);
@@ -652,7 +652,7 @@ void PlayerManager::OnClientPutInServer(edict_t *pEntity, const char *playername
 
 		int userId = engine->GetPlayerUserId(pEntity);
 #if (SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_HL2DM || SOURCE_ENGINE == SE_DODS || SOURCE_ENGINE == SE_TF2 || SOURCE_ENGINE == SE_SDK2013 \
-	|| SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_NUCLEARDAWN || SOURCE_ENGINE == SE_PVKII)
+	|| SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_NUCLEARDAWN || SOURCE_ENGINE == SE_PVKII || SOURCE_ENGINE == SE_CSSO)
 		static ConVar *tv_name = icvar->FindVar("tv_name");
 #endif
 #if SOURCE_ENGINE == SE_TF2
@@ -681,7 +681,7 @@ void PlayerManager::OnClientPutInServer(edict_t *pEntity, const char *playername
 #elif SOURCE_ENGINE == SE_BLADE
 				|| strcmp(playername, "BBTV") == 0
 #elif (SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_HL2DM || SOURCE_ENGINE == SE_DODS || SOURCE_ENGINE == SE_TF2 || SOURCE_ENGINE == SE_SDK2013 \
-	|| SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_NUCLEARDAWN || SOURCE_ENGINE == SE_PVKII)
+	|| SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_NUCLEARDAWN || SOURCE_ENGINE == SE_PVKII || SOURCE_ENGINE == SE_CSSO)
 				|| (tv_name && strcmp(playername, tv_name->GetString()) == 0) || (tv_name && tv_name->GetString()[0] == 0 && strcmp(playername, "unnamed") == 0)
 #else
 				|| strcmp(playername, "SourceTV") == 0
@@ -800,7 +800,7 @@ void PlayerManager::OnServerHibernationUpdate(bool bHibernating)
 			CPlayer *pPlayer = &m_Players[i];
 			if (pPlayer->IsConnected() && pPlayer->IsFakeClient())
 			{
-#if SOURCE_ENGINE < SE_LEFT4DEAD || SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_BLADE || SOURCE_ENGINE == SE_NUCLEARDAWN || SOURCE_ENGINE == SE_MCV
+#if SOURCE_ENGINE < SE_LEFT4DEAD || SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_BLADE || SOURCE_ENGINE == SE_NUCLEARDAWN || SOURCE_ENGINE == SE_MCV || SOURCE_ENGINE == SE_CSSO
 				// These games have the bug fixed where hltv/replay was getting kicked on hibernation
 				if (pPlayer->IsSourceTV() || pPlayer->IsReplay())
 					continue;
@@ -1338,7 +1338,7 @@ void PlayerManager::OnClientSettingsChanged(edict_t *pEntity)
 			}
 		}
 
-#if SOURCE_ENGINE >= SE_LEFT4DEAD
+#if SOURCE_ENGINE >= SE_LEFT4DEAD && SOURCE_ENGINE != SE_CSSO
 		const char* networkid_force;
 		if ((networkid_force = engine->GetClientConVarValue(client, "networkid_force")) && networkid_force[0] != '\0')
 		{

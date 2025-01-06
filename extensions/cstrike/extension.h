@@ -44,15 +44,13 @@
 
 int CallPriceForward(int client, const char *weapon_name, int price);
 
-#if SOURCE_ENGINE == SE_CSGO
-#define WEAPON_C4 49
-#define WEAPON_KNIFE 42
-#define WEAPON_KNIFE_GG 41
-#define WEAPON_KEVLAR 50
-#define WEAPON_ASSAULTSUIT 51
-#define WEAPON_NIGHTVISION 52
-#define WEAPON_DEFUSER 53
-#define WEAPON_M4 16
+#if SOURCE_ENGINE == SE_CSSO
+#define WEAPON_C4 5
+#define WEAPON_KNIFE 43
+#define WEAPON_SHIELD -1
+#define WEAPON_KEVLAR 65
+#define WEAPON_ASSAULTSUIT 66
+#define WEAPON_NIGHTVISION 67
 #else
 #define WEAPON_C4 6
 #define WEAPON_KNIFE 28

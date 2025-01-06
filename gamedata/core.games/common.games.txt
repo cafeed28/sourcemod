@@ -103,6 +103,7 @@
 			"engine"			"insurgency"
 			"engine"			"doi"
 			"engine"			"csgo"
+			"engine"			"csso"
 			"engine"			"sdk2013"
 			"engine"			"contagion"
 			"engine"			"pvkii"
@@ -209,6 +210,7 @@
 		"#supported"
 		{
 			"engine"				"csgo"
+			"engine"				"csso"
 		}
 
 		"Keys"
@@ -265,6 +267,7 @@
 		"#supported"
 		{
 			"engine"				"csgo"
+			"engine"				"csso"
 		}
 		
 		"Keys"
@@ -310,6 +313,7 @@
 			"game"					"bms"
 			"game"					"kz"
 			"game"					"csgo"
+			"game"					"csso"
 			"game"					"reactivedrop"
 			"game"					"FortressForever"
 			"game"					"vietnam"
@@ -338,6 +342,7 @@
 		"#supported"
 		{
 			"engine"	"csgo"
+			"engine"	"csso"
 		}
 		
 		"Keys"
@@ -367,6 +372,7 @@
 		"#supported"
 		{
 			"engine"	"csgo"
+			"engine"	"csso"
 			"engine"	"blade"
 			"engine"	"insurgency"
 			"engine"	"mcv"

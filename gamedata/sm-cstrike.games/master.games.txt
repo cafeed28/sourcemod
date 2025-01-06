@@ -19,5 +19,10 @@
 	"game.css.txt"
 	{
 		"game"		"cstrike"
-	}	
+	}
+
+	"game.csso.txt"
+	{
+		"engine"	"csso"
+	}
 }

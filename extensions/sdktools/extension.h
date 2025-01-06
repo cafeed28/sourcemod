@@ -121,7 +121,7 @@ public: // IVoiceServer
 #else
 	void OnClientCommand(edict_t *pEntity);
 #endif
-#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	void OnSendClientCommand(edict_t *pPlayer, const char *szFormat);
 #endif
 public: //ITimedEvent

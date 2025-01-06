@@ -1278,9 +1278,9 @@ bool IsWindowsReservedDeviceName(const char *pMapname)
 	
 	return false;
 }
-#endif 
+#endif
 
-#if SOURCE_ENGINE >= SE_LEFT4DEAD && defined PLATFORM_WINDOWS && SOURCE_ENGINE != SE_MOCK
+#if SOURCE_ENGINE >= SE_LEFT4DEAD && defined PLATFORM_WINDOWS && SOURCE_ENGINE != SE_MOCK && SOURCE_ENGINE != SE_CSSO
 // This frees memory allocated by the game using the game's CRT on Windows,
 // avoiding a crash due to heap corruption (issue #910).
 template< class T, class I >
@@ -1331,7 +1331,7 @@ SMFindMapResult CHalfLife2::FindMap(const char *pMapName, char *pFoundMap, size_
 	
 	ke::SafeStrcpy(pFoundMap, nMapNameMax, pMapName);
 
-#if SOURCE_ENGINE >= SE_LEFT4DEAD
+#if SOURCE_ENGINE >= SE_LEFT4DEAD && SOURCE_ENGINE != SE_CSSO
 	static char mapNameTmp[PLATFORM_MAX_PATH];
 	g_SourceMod.Format(mapNameTmp, sizeof(mapNameTmp), "maps%c%s.bsp", PLATFORM_SEP_CHAR, pMapName);
 	if (filesystem->FileExists(mapNameTmp, "GAME"))
@@ -1385,7 +1385,7 @@ SMFindMapResult CHalfLife2::FindMap(const char *pMapName, char *pFoundMap, size_
 	}
 
 #elif SOURCE_ENGINE == SE_TF2 || SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_DODS || SOURCE_ENGINE == SE_HL2DM \
-	|| SOURCE_ENGINE == SE_SDK2013 || SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_PVKII
+	|| SOURCE_ENGINE == SE_SDK2013 || SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_PVKII || SOURCE_ENGINE == SE_CSSO
 	static IVEngineServer *engine23 = (IVEngineServer *)(g_SMAPI->GetEngineFactory()("VEngineServer023", nullptr));
 	if (engine23)
 	{
@@ -1564,6 +1564,7 @@ uint64_t CHalfLife2::GetServerSteamId64() const
 #if SOURCE_ENGINE == SE_BLADE          \
 	|| SOURCE_ENGINE == SE_BMS         \
 	|| SOURCE_ENGINE == SE_CSGO        \
+	|| SOURCE_ENGINE == SE_CSSO        \
 	|| SOURCE_ENGINE == SE_CSS         \
 	|| SOURCE_ENGINE == SE_DODS        \
 	|| SOURCE_ENGINE == SE_EYE         \

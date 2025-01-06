@@ -121,7 +121,7 @@ typedef int QueryCvarCookie_t;
 	typedef FnChangeCallback					FnChangeCallback_t;
 #endif //SOURCE_ENGINE >= SE_ORANGEBOX
 
-#if SOURCE_ENGINE >= SE_LEFT4DEAD
+#if SOURCE_ENGINE >= SE_LEFT4DEAD && SOURCE_ENGINE != SE_CSSO
 	inline int IndexOfEdict(const edict_t *pEdict)
 	{
 		return (int)(pEdict - gpGlobals->pEdicts);

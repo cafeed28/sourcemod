@@ -126,7 +126,7 @@ DETOUR_DECL_MEMBER0(DetourWeaponPrice, int)
 }
 #endif
 
-#if SOURCE_ENGINE == SE_CSS
+#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSSO
 DETOUR_DECL_MEMBER2(DetourTerminateRound, void, float, delay, int, reason)
 {
 	if (g_pIgnoreTerminateDetour)
@@ -189,7 +189,7 @@ DETOUR_DECL_MEMBER3(DetourTerminateRound, void, int, reason, int, unknown, int, 
 	reason++;
 #endif
 	
-#if SOURCE_ENGINE == SE_CSS
+#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSSO
 	if (result == Pl_Changed)
 		return DETOUR_MEMBER_CALL(DetourTerminateRound)(delay, reason);
 
@@ -218,6 +218,8 @@ DETOUR_DECL_MEMBER3(DetourTerminateRound, void, int, reason, int, unknown, int, 
 
 #if SOURCE_ENGINE == SE_CSGO
 DETOUR_DECL_MEMBER3(DetourCSWeaponDrop, void, CBaseEntity *, weapon, bool, bThrowForward, bool, bDonated)
+#elif SOURCE_ENGINE == SE_CSSO
+DETOUR_DECL_MEMBER2(DetourCSWeaponDrop, void, CBaseEntity *, weapon, bool, bThrowForward)
 #else
 DETOUR_DECL_MEMBER3(DetourCSWeaponDrop, void, CBaseEntity *, weapon, bool, bDropShield, bool, bThrowForward)
 #endif
@@ -227,6 +229,8 @@ DETOUR_DECL_MEMBER3(DetourCSWeaponDrop, void, CBaseEntity *, weapon, bool, bDrop
 		g_pIgnoreCSWeaponDropDetour = false;
 #if SOURCE_ENGINE == SE_CSGO
 		DETOUR_MEMBER_CALL(DetourCSWeaponDrop)(weapon, bThrowForward, bDonated);
+#elif SOURCE_ENGINE == SE_CSSO
+		DETOUR_MEMBER_CALL(DetourCSWeaponDrop)(weapon, bThrowForward);
 #else
 		DETOUR_MEMBER_CALL(DetourCSWeaponDrop)(weapon, bDropShield, bThrowForward);
 #endif
@@ -251,6 +255,8 @@ DETOUR_DECL_MEMBER3(DetourCSWeaponDrop, void, CBaseEntity *, weapon, bool, bDrop
 	{
 #if SOURCE_ENGINE == SE_CSGO
 		DETOUR_MEMBER_CALL(DetourCSWeaponDrop)(weapon, bThrowForward, bDonated);
+#elif SOURCE_ENGINE == SE_CSSO
+		DETOUR_MEMBER_CALL(DetourCSWeaponDrop)(weapon, bThrowForward);
 #else
 		DETOUR_MEMBER_CALL(DetourCSWeaponDrop)(weapon, bDropShield, bThrowForward);
 #endif
