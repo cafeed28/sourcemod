@@ -67,6 +67,7 @@ enum CSRoundEndReason
 
 enum CSWeaponID
 {
+	CSWeapon_NONE = 0,
 	CSWeapon_P250,
 	CSWeapon_GLOCK,
 	CSWeapon_SSG08,
