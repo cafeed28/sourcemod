@@ -402,7 +402,7 @@ void *GetWeaponInfo(int weaponID)
 
 const char *GetWeaponNameFromClassname(const char *weapon)
 {
-	char *szTemp = strstr((char *)weapon, "_");
+	char *szTemp = strstr((char *)weapon, "weapon_");
 
 	if (!szTemp)
 	{
@@ -410,7 +410,7 @@ const char *GetWeaponNameFromClassname(const char *weapon)
 	}
 	else
 	{
-		return (const char *)((intptr_t)szTemp + 1);
+		return (const char *)((intptr_t)szTemp + 7);
 	}
 }
 
@@ -522,7 +522,7 @@ bool IsValidWeaponID(int id)
 	if (!res.found())
 		return false;
 #else
-	else if (id > SMCSWeapon_NIGHTVISION || !GetWeaponInfo(id))
+	else if (id > SMCSWeapon_NVGS || !GetWeaponInfo(id))
 		return false;
 #endif
 	return true;
