@@ -92,6 +92,7 @@ enum EngineVersion
 	Engine_DOI,                 /**< Day of Infamy */
 	Engine_PVKII = 26,          /**< Pirates, Vikings, and Knights II */
 	Engine_MCV,                 /**< Military Conflict: Vietnam */
+	Engine_CSSO,                /**< Counter-Strike: Source Offensive */
 };
 
 enum FindMapResult
