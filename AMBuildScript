@@ -520,6 +520,7 @@ class SMConfig(object):
       os.path.join(self.mms_root, 'core', 'sourcehook'),
     ]
 
+    compiler.defines += ['GAME_DLL']
     for other_sdk in self.sdk_manifests:
       compiler.defines += ['SE_{}={}'.format(other_sdk['define'], other_sdk['code'])]
 

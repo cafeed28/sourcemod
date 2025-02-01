@@ -38,8 +38,6 @@
 
 #include "smsdk_ext.h"
 
-#define GAME_DLL 1
-
 #include <isaverestore.h>
 
 #ifndef _DEBUG
