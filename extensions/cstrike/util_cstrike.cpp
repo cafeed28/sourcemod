@@ -402,15 +402,18 @@ void *GetWeaponInfo(int weaponID)
 
 const char *GetWeaponNameFromClassname(const char *weapon)
 {
-	char *szTemp = strstr((char *)weapon, "weapon_");
-
-	if (!szTemp)
+	// TODO: startswith, because this will shit itself when it encounter smth like "item_cool_weapon_3000" (will return "ol_weapon_3000" probably)
+	if (strstr(weapon, "weapon_"))
 	{
-		return weapon;
+		return (const char *)((intptr_t)weapon + 7);
+	}
+	else if (strstr(weapon, "item_"))
+	{
+		return (const char *)((intptr_t)weapon + 5);
 	}
 	else
 	{
-		return (const char *)((intptr_t)szTemp + 7);
+		return weapon;
 	}
 }
 
@@ -522,7 +525,7 @@ bool IsValidWeaponID(int id)
 	if (!res.found())
 		return false;
 #else
-	else if (id > SMCSWeapon_NVGS || !GetWeaponInfo(id))
+	else if (id > SMCSWeapon_MAX_WEAPONS)
 		return false;
 #endif
 	return true;
