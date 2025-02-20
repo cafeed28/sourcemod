@@ -161,11 +161,6 @@
 		"game"		"ag2"
 	}
 	
-	"game.cstrike.txt"
-	{
-		"game"		"cstrike"
-	}
-	
 	"game.nmrih.txt"
 	{
 		"game"		"nmrih"
