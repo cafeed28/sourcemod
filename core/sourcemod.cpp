@@ -361,6 +361,7 @@ static bool MapEntitiesFromString(KeyValues *pKVMapEntities, char const *pMapEnt
 #endif
 
 #if SOURCE_ENGINE == SE_CSSO
+static KeyValues* s_pKVMapEntities = NULL;
 #define pMapEntities pKVMapEntities
 #endif
 
@@ -438,7 +439,7 @@ bool SourceModBase::LevelInit(char const *pMapName, char const *pMapEntities, ch
 	pMapEntities = logicore.GetEntityLumpString();
 
 #if SOURCE_ENGINE == SE_CSSO
-	static KeyValues* s_pKVMapEntities = new KeyValues("Entities");
+	if (s_pKVMapEntities == NULL) s_pKVMapEntities = new KeyValues("Entities");
 	MapEntitiesFromString(s_pKVMapEntities, pMapEntities);
 	pMapEntities = reinterpret_cast<char const *>(s_pKVMapEntities);
 #endif
@@ -452,7 +453,7 @@ const char *SourceModBase::GetMapEntitiesString()
 	if (pNewMapEntities != nullptr)
 	{
 #if SOURCE_ENGINE == SE_CSSO
-		static KeyValues* s_pKVMapEntities = new KeyValues("Entities");
+		if (s_pKVMapEntities == NULL) s_pKVMapEntities = new KeyValues("Entities");
 		MapEntitiesFromString(s_pKVMapEntities, pNewMapEntities);
 		pNewMapEntities = reinterpret_cast<char const *>(s_pKVMapEntities);
 #endif
