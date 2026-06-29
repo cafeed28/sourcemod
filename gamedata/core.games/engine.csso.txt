@@ -1,0 +1,18 @@
+"Games"
+{
+	/* CGlobalEntityList */
+	"#default"
+	{
+		"Offsets"
+		{
+			"EntInfo"
+			{
+				"windows64"	"8"
+			}
+			"GetDataDescMap"
+			{
+				"windows64"	"13"
+			}
+		}
+	}
+}

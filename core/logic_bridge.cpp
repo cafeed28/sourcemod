@@ -404,6 +404,8 @@ void UTIL_ConsolePrint(const char *fmt, ...)
 #define GAMEFIX "2.mcv"
 #elif SOURCE_ENGINE == SE_MOCK
 #define GAMEFIX "2.mock"
+#elif SOURCE_ENGINE == SE_CSSO
+#define GAMEFIX "2.csso"
 #else
 #define GAMEFIX "2.ep1"
 #endif
@@ -530,6 +532,8 @@ const char *CoreProviderImpl::GetSourceEngineName()
 	return "pvkii";
 #elif SOURCE_ENGINE == SE_MCV
 	return "mcv";
+#elif SOURCE_ENGINE == SE_CSSO
+	return "csso";
 #endif
 }
 

@@ -186,9 +186,12 @@ void CHalfLife2::InitLogicalEntData()
 	|| SOURCE_ENGINE == SE_BMS     \
 	|| SOURCE_ENGINE == SE_BLADE   \
 	|| SOURCE_ENGINE == SE_NUCLEARDAWN \
-	|| SOURCE_ENGINE == SE_PVKII
+	|| SOURCE_ENGINE == SE_PVKII   \
+	|| SOURCE_ENGINE == SE_CSSO
 
+#if SOURCE_ENGINE != SE_CSSO
 	if (g_SMAPI->GetServerFactory(false)("VSERVERTOOLS003", nullptr))
+#endif
 	{
 		g_EntList = servertools->GetEntityList();
 	}
@@ -1397,9 +1400,11 @@ SMFindMapResult CHalfLife2::FindMap(const char *pMapName, char *pFoundMap, size_
 	}
 
 #elif SOURCE_ENGINE == SE_TF2 || SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_DODS || SOURCE_ENGINE == SE_HL2DM \
-	|| SOURCE_ENGINE == SE_SDK2013 || SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_PVKII
+	|| SOURCE_ENGINE == SE_SDK2013 || SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_PVKII || SOURCE_ENGINE == SE_CSSO
+#if SOURCE_ENGINE != SE_CSSO
 	static IVEngineServer *engine23 = (IVEngineServer *)(g_SMAPI->GetEngineFactory()("VEngineServer023", nullptr));
 	if (engine23)
+#endif
 	{
 		static char szTemp[PLATFORM_MAX_PATH];
 		if (pFoundMap == NULL)
@@ -1411,11 +1416,13 @@ SMFindMapResult CHalfLife2::FindMap(const char *pMapName, char *pFoundMap, size_
 
 		return static_cast<SMFindMapResult>(engine->FindMap(pFoundMap, static_cast<int>(nMapNameMax)));
 	}
+#if SOURCE_ENGINE != SE_CSSO
 	else
 	{
 		static IVEngineServer *engine21 = (IVEngineServer *)(g_SMAPI->GetEngineFactory()("VEngineServer021", nullptr));
 		return engine21->IsMapValid(pMapName) == 0 ? SMFindMapResult::NotFound : SMFindMapResult::Found;
 	}
+#endif
 #else
 	return engine->IsMapValid(pMapName) == 0 ? SMFindMapResult::NotFound : SMFindMapResult::Found;
 #endif
@@ -1586,7 +1593,8 @@ uint64_t CHalfLife2::GetServerSteamId64() const
 	|| SOURCE_ENGINE == SE_ALIENSWARM  \
 	|| SOURCE_ENGINE == SE_TF2 \
 	|| SOURCE_ENGINE == SE_PVKII \
-	|| SOURCE_ENGINE == SE_MCV
+	|| SOURCE_ENGINE == SE_MCV \
+	|| SOURCE_ENGINE == SE_CSSO
 	const CSteamID *sid = engine->GetGameServerSteamID();
 	if (sid)
 	{

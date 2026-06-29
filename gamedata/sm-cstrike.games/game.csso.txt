@@ -1,0 +1,211 @@
+"Games"
+{
+	"#default"
+	{
+		"Offsets"
+		{
+			//Offset of szClassName in CCSWeaponInfo
+			"WeaponName"
+			{
+				"windows64"		"10"
+			}
+			//Offset of iWeaponPrice in CCSWeaponInfo
+			"WeaponPrice"
+			{
+				// STRING: "WeaponPrice"
+				"windows64"		"1972"
+			}
+			//Offset of iWeaponID in CCSWeaponInfo
+			"WeaponID"
+			{
+				// STRING: "MaxPlayerSpeed"
+				// CCSWeaponInfo::flMaxPlayerSpeed - 4
+				"windows64"		"1920"
+			}
+			//Offset into CheckWinLimit to find CT team score offset from gamerules.
+			"CTTeamScoreOffset"
+			{
+				"windows64"	"113"
+			}
+			//Offset into CheckWinLimit to find T team score offset from gamerules.
+			"TTeamScoreOffset"
+			{
+				"windows64"	"138"
+			}
+		}
+		"Signatures"
+		{
+			// xref OutputDamageGiven, there are two subroutines, one of them has "#Hint_cannot_play_because_tk", other one is RoundRespawn
+			// OutputDamageGiven STRING: "Player: %s1 - Damage Given"
+			"RoundRespawn"
+			{
+				"library"	"server"
+				"windows64"	"\x48\x89\x5C\x24\x2A\x48\x89\x74\x24\x2A\x57\x48\x83\xEC\x2A\x48\x8B\xD9\x4C\x89\x74\x24"
+			}
+			// String: "CCSPlayer::SwitchTeam( %d ) - invalid team index."
+			"SwitchTeam"
+			{
+				"library"	"server"
+				"windows64"	"\x48\x89\x5C\x24\x08\x48\x89\x74\x24\x10\x57\x48\x83\xEC\x40\x48\x8B\xD9\x41"
+			}
+			// String: "#Alias_Not_Avail"
+			"HandleCommand_Buy_Internal"
+			{
+				"library"		"server"
+				"windows64"		"\x40\x53\x55\x56\x57\x48\x83\xEC\x48"
+			}
+			// String: "ValveBiped.Weapon_bone"
+			"CSWeaponDrop"
+			{
+				"library"		"server"
+				"windows64"		"\x48\x85\xD2\x0F\x84\x2A\x2A\x2A\x2A\x48\x8B\xC4\x55\x56\x41\x54"
+			}
+			// String: "CTsWin"
+			"TerminateRound"
+			{
+				"library"		"server"
+				"windows64"		"\x48\x8B\xC4\x55\x56\x48\x8D\x68\xA1\x48\x81\xEC\x98\x00\x00\x00\x48\x89"
+			}
+			// String: "FX_FireBullets: GetWeaponInfo failed for weapon %s\n" follow the xref, go to beginning of the if-else
+            // there is a call to GetWeaponInfo
+			"GetWeaponInfo"
+			{
+				"library"		"server"
+				"windows64"		"\x48\x83\xEC\x2A\x85\xC9\x0F\x84"
+			}
+			// in GetWeaponInfo:
+			// if (v3 == GetInvalidWeaponInfoHandle()) return 0;
+			// else return GetFileWeaponInfoFromHandle(v3);
+			"GetFileWeaponInfoFromHandle"
+			{
+				"library"		"server"
+				"windows64"		"\x66\x3B\x0D\x2A\x2A\x2A\x2A\x73"
+			}
+			// find FX_FireBullets (strings starting with "FX_FireBullets")
+			// FX_FireBullets calls GetWeaponID("weapon_revolver")
+			// GetWeaponID calls AliasToWeaponID(v2 + 1)
+			"AliasToWeaponID"
+			{
+				"library"	"server"
+				"windows64"	"\x48\x89\x5C\x24\x2A\x56\x48\x83\xEC\x2A\xBE"
+			}
+			// String: "FX_FireBullets: weapon alias for ID %d not found\n" follow the xref, go to beginning of the if-else
+            // there is a call to GetWeaponInfo
+			"WeaponIDToAlias"
+			{
+				"library"	"server"
+				"windows64"	"\x3B\x0D\x2A\x2A\x2A\x2A\x73\x45"
+			}
+			// In CS:SO this is actually CCSGameRules::CheckRestartRound(void) but to keep same gamedata as cs:s.
+			"CheckWinLimit"
+			{
+                // inlined in CCSGameRules::Think, signature is at start of inlined function
+				// function start: if ( *(float *)(v1 + 1016) < *(float *)(gpGlobals + 12) ) { v1 = ConVar::GetInt((__int64)&mp_restartgame);
+				// STRING: "World triggered \"Restart_Round_(%i_%s)\"\n"
+				"library"	"server"
+				"windows64"	"\x48\x8B\x05\x2A\x2A\x2A\x2A\xBD\x2A\x2A\x2A\x2A\xF3\x0F\x10\x87"
+			}
+		}
+	}
+	
+	"#default"
+	{
+		"Keys"
+		{
+			"MVPsBase"		"m_bPlayerDominatingMe"
+		}
+		
+		"Offsets"
+		{
+			// String: "round_mvp" right above a member variable should be getting incremented
+			// This is m_iMVPs, take the offset and subtract it by the offset of the sendprop above
+			"MVPs"
+			{
+				"windows64"	"158"
+			}
+		}
+	}
+	
+	"#default"
+	{
+		"Keys"
+		{
+			"AssistsBase"		"m_bPlayerDominatingMe"
+		}
+		
+		"Offsets"
+		{
+			// xref the contributionscore_assist convar, you'll find CCSPlayer::AddContributionScore(this, contributionscore_assist.GetInt())
+			"Assists"
+			{
+				"windows64"	"166"
+			}
+		}
+	}
+	
+	"#default"
+	{
+		"Keys"
+		{
+			"CScoreBase"		"m_bPlayerDominatingMe"
+		}
+		
+		"Offsets"
+		{
+			// after you found assists, in the same function right before return will be CCSPlayer::IncrementAssistsCount(this, 1)
+			"CScore"
+			{
+				"windows64"	"162"
+			}
+		}
+	}
+	
+	// Used for SetClanTag and GetClanTag
+	// to find the ClanTag offset start with the string "ClanTagChanged". Inside the function there is 2 KeyValues::GetString, one for "tag", and one for "name"
+	// The respective function underneath each are SetClanTag and SetClanName.
+	// Note: Second offset can be skipped by simply dumping the netprops instead on each os although the distance will probably be the same on all.
+	
+	"#default"
+	{
+		"Keys"
+		{
+			"ClanTagBase"		"m_flVelocityModifier"
+		}
+		
+		"Offsets"
+		{
+			"ClanTagSize"
+			{
+				"windows64"	"16"
+			}
+			"ClanTag"
+			{
+				"windows64"	"40"
+			}
+		}
+	}
+
+	"#default"
+	{
+		"Keys"
+		{
+			"WeaponDatabaseBase"	"WeaponIDToAlias"
+		}
+
+		"Offsets"
+		{
+			// offset into WeaponIDToAlias
+			// first instruction: 
+			// cmp ecx, cs:g_WeaponDatabase.m_nAllocationCount
+			"WeaponDatabase"
+			{
+				"windows64"	"2"
+			}
+			// offsetof m_nAllocationCount (because WeaponDatabase points to it)
+			"WeaponDatabaseOffset"
+			{
+				"windows64"	"-16"
+			}
+		}
+	}
+}

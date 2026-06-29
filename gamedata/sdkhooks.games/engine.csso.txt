@@ -1,0 +1,141 @@
+"Games"
+{
+	"#default"
+	{
+		"Offsets"
+		{
+			// STRING: "%s Blocked by %s"
+			"Blocked"
+			{
+				"windows64"	"108"
+			}
+			// Blocked - 2
+			"EndTouch"
+			{
+				"windows64"	"106"
+			}
+			// STRING: "ERROR: Undefined ammo type!"
+			"FireBullets"
+			{
+				"windows64"	"119"
+			}
+			// CBaseEntity::ModifyOrAppendCriteria - 1
+			// CBaseEntity::ModifyOrAppendCriteria: STRINGS: "randomnum", "classname", "name", "health", "%.3f", "healthfrac", "episodic", "world"
+			"GetMaxHealth"
+			{
+				"windows64"	"124"
+			}
+			// TODO: how to find
+			"GroundEntChanged"
+			{
+				"windows64"	"185"
+			}
+			// STRING: "sequence: %d, frame %.0f"
+			"OnTakeDamage"
+			{
+				"windows64"	"67"
+			}
+			// STRINGS: "userid", "health", "priority", "player_hurt", "attacker"
+			"OnTakeDamage_Alive"
+			{
+				"windows64"	"286"
+			}
+			// STRING: "A.I. Disabled..."
+			"PreThink"
+			{
+				"windows64"	"347"
+			}
+			// STRINGS: "weapon_c4", "SpottedLooseBomb", "#CStrike_TitlesTXT_Game_afk_bomb_drop", "Player.AmbientUnderWater"
+			// xref "Player.AmbientUnderWater", smaller function is Precache, bigger is CCSPlayer::PostThink
+			"PostThink"
+			{
+				"windows64"	"348"
+			}
+			// STRINGS: "userid", "weapon_reload"
+			"Reload"
+			{
+				"windows64"	"284"
+			}
+			// CBaseEntity::SetModel - 4, SetEntityModel in sdktools
+			"SetTransmit"
+			{
+				"windows64"	"24"
+			}
+			// CBaseEntity::SetOwnerEntity - 1
+			"ShouldCollide"
+			{
+				"windows64"	"20"
+			}
+			// xref "Player.Respawn", smaller function is Precache, bigger is CCSPlayer::Respawn
+			"Spawn"
+			{
+				"windows64"	"26"
+			}
+			// STRNGS: "_EnableUpdateTarget", "_DisableUpdateTarget", "SetPosition"
+			"Use"
+			{
+				"windows64"	"103"
+			}
+			// Use + 1
+			"StartTouch"
+			{
+				"windows64"	"104"
+			}
+			// StartTouch + 1
+			"Touch"
+			{
+				"windows64"	"105"
+			}
+			// CFlexCycler::Think: STRINGS: "%s%d", "%d : %s", ""%s"", "%31s", "phoneme", "upper_raiser", "%s:%s"
+			// CBlendingCycler::Think: STRING: "Current Blend: %d"
+			"Think"
+			{
+				"windows64"	"52"
+			}
+			// STRING: "Hit Location: Gear"
+			"TraceAttack"
+			{
+				"windows64"	"65"
+			}
+			// STRING: "Ignoring bogus angles (%f,%f,%f) from vphysics! (entity %s)"
+			"VPhysicsUpdate"
+			{
+				"windows64"	"165"
+			}
+			// Weapon_* functions can be found in vscript's "ScriptWeapon_*"
+			"Weapon_CanUse"
+			{
+				"windows64"	"274"
+			}
+			"Weapon_Equip"
+			{
+				"windows64"	"275"
+			}
+			"Weapon_Drop"
+			{
+				"windows64"	"277"
+			}
+			"Weapon_Switch"
+			{
+				"windows64"	"278"
+			}
+			"Weapon_CanSwitchTo"
+			{
+				"windows64"	"280"
+			}
+		}
+	}
+	
+	"#default"
+	{
+		"Offsets"
+		{
+			// loop in CGlobalEntityList::OnAddEntity iterates over m_entityListeners
+			// *(a1 + 262200) + 8 * i
+			"EntityListeners"
+			{
+				"windows64"	"262200"
+			}
+		}
+	}
+}

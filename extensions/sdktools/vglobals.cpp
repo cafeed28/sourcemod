@@ -236,7 +236,8 @@ void GetIServer()
 	|| SOURCE_ENGINE == SE_DOI     \
 	|| SOURCE_ENGINE == SE_BLADE   \
 	|| SOURCE_ENGINE == SE_INSURGENCY \
-	|| SOURCE_ENGINE == SE_PVKII
+	|| SOURCE_ENGINE == SE_PVKII   \
+	|| SOURCE_ENGINE == SE_CSSO
 
 #if SOURCE_ENGINE == SE_SDK2013
 	if (g_SMAPI->GetEngineFactory(false)("VEngineServer022", nullptr))

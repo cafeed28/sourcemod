@@ -35,7 +35,11 @@
 #include <iplayerinfo.h>
 #include <sm_argbuffer.h>
 
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSSO
+#include "utldict.h"
+#endif
+
+#if SOURCE_ENGINE != SE_CSS
 #include "itemdef-hash.h"
 
 ClassnameMap g_mapClassToDefIdx;
@@ -59,6 +63,57 @@ WeaponIDMap g_mapWeaponIDToDefIdx;
 		g_pSM->LogError(myself, "Failed to lookup %s signature.", name); \
 		return defaultret;\
 	}
+
+#if SOURCE_ENGINE == SE_CSSO
+static int g_mapRoundEndReason_SM2Game[] = {
+	SMCSRoundEnd_TargetBombed, 0,
+	SMCSRoundEnd_BombDefused, 1,
+	SMCSRoundEnd_CTWin, 2,
+	SMCSRoundEnd_TerroristWin, 3,
+	SMCSRoundEnd_Draw, 4,
+	SMCSRoundEnd_HostagesRescued, 5,
+	SMCSRoundEnd_TargetSaved, 6,
+	SMCSRoundEnd_HostagesNotRescued, 7,
+	SMCSRoundEnd_GameStart, 8,
+	SMCSRoundEnd_TerroristsSurrender, 9,
+	SMCSRoundEnd_CTSurrender, 10,
+};
+static_assert(SM_ARRAYSIZE(g_mapRoundEndReason_SM2Game) % 2 == 0);
+#endif
+
+int RoundEndReasonFromGame(int reason)
+{
+#if SOURCE_ENGINE == SE_CSS
+	return result;
+#elif SOURCE_ENGINE == SE_CSGO
+	return result - 1;
+#elif SOURCE_ENGINE == SE_CSSO
+	for (int i = 0; i < SM_ARRAYSIZE(g_mapRoundEndReason_SM2Game); i += 2)
+	{
+		int reason_sm = g_mapRoundEndReason_SM2Game[i];
+		int reason_game = g_mapRoundEndReason_SM2Game[i + 1];
+		if (reason_game == reason) return reason_sm;
+	}
+	return -1;
+#endif
+}
+
+int RoundEndReasonToGame(int reason)
+{
+#if SOURCE_ENGINE == SE_CSS
+	return reason;
+#elif SOURCE_ENGINE == SE_CSGO
+	return reason + 1;
+#elif SOURCE_ENGINE == SE_CSSO
+	for (int i = 0; i < SM_ARRAYSIZE(g_mapRoundEndReason_SM2Game); i += 2)
+	{
+		int reason_sm = g_mapRoundEndReason_SM2Game[i];
+		int reason_game = g_mapRoundEndReason_SM2Game[i + 1];
+		if (reason_sm == reason) return reason_game;
+	}
+	return -1;
+#endif
+}
 
 #if SOURCE_ENGINE == SE_CSGO
 
@@ -232,7 +287,9 @@ CEconItemDefinition *GetItemDefintionByName(const char *classname)
 
 	return pItemDef;
 }
+#endif
 
+#if SOURCE_ENGINE == SE_CSGO
 void CreateHashMaps()
 {
 	CEconItemSchema *pSchema = GetItemSchema();
@@ -297,7 +354,108 @@ void CreateHashMaps()
 		}
 	}
 }
+#elif SOURCE_ENGINE == SE_CSSO
+uint8_t* GetAbsoluteAddress(uint8_t* pRelativeAddress, uintptr_t offsetRVA, uintptr_t offsetRIP)
+{
+	const int64_t RVA = *reinterpret_cast<int32_t*>(pRelativeAddress + offsetRVA);
+	const auto RIP = pRelativeAddress + offsetRIP;
+	return RVA + RIP;
+}
 
+void CreateHashMaps()
+{
+	static int iNameOffset = -1;
+	if (iNameOffset == -1)
+	{
+		if (!g_pGameConf->GetOffset("WeaponName", &iNameOffset) || iNameOffset == -1)
+		{
+			return;
+		}
+	}
+
+	static int iPriceOffset = -1;
+	if (iPriceOffset == -1)
+	{
+		if (!g_pGameConf->GetOffset("WeaponPrice", &iPriceOffset) || iPriceOffset == -1)
+		{
+			return;
+		}
+	}
+
+	static int iIdOffset = -1;
+	if (iIdOffset == -1)
+	{
+		if (!g_pGameConf->GetOffset("WeaponID", &iIdOffset) || iIdOffset == -1)
+		{
+			return;
+		}
+	}
+
+	struct Weapon_t
+	{
+		char szBaseClassname[64];
+		bool bWeaponScriptExists;
+	};
+
+	typedef CUtlDict<Weapon_t> WeaponDatabase_t;
+
+	static WeaponDatabase_t* pWeaponDatabase;
+	
+	if (!pWeaponDatabase)
+	{
+		uint8_t* pWeaponDatabaseBase;
+		if (!g_pGameConf->GetMemSig(g_pGameConf->GetKeyValue("WeaponDatabaseBase"), (void**)&pWeaponDatabaseBase) || !pWeaponDatabaseBase)
+		{
+			return;
+		}
+
+		int iWeaponDatabase = -1;
+		if (!g_pGameConf->GetOffset("WeaponDatabase", &iWeaponDatabase) || iWeaponDatabase == -1)
+		{
+			return;
+		}
+
+		int iWeaponDatabaseOffset = -1;
+		if (!g_pGameConf->GetOffset("WeaponDatabaseOffset", &iWeaponDatabaseOffset) || iWeaponDatabaseOffset == -1)
+		{
+			return;
+		}
+
+		pWeaponDatabase = (WeaponDatabase_t*)(GetAbsoluteAddress(pWeaponDatabaseBase + iWeaponDatabase, 0, 4) + iWeaponDatabaseOffset);
+	}
+
+	WeaponDatabase_t& mapWeaponDatabase = *pWeaponDatabase;
+
+	g_mapClassToDefIdx.init();
+	g_mapDefIdxToClass.init();
+	g_mapWeaponIDToDefIdx.init();
+
+	FOR_EACH_DICT_FAST(mapWeaponDatabase, iItemDefIdx)
+	{
+		auto weaponDatabase = mapWeaponDatabase.Element(iItemDefIdx);
+
+		void* info = GetWeaponInfo(iItemDefIdx);
+		if (!info) continue;
+
+		const char* name = (const char*)((intptr_t)info + iNameOffset);
+		int price = *(int*)((intptr_t)info + iPriceOffset);
+		SMCSWeapon iWeaponID = GetWeaponIdFromName(name);
+
+		ItemDefHashValue hash(-1, price, iWeaponID, iItemDefIdx, name);
+
+		ClassnameMap::Insert i = g_mapClassToDefIdx.findForAdd(name);
+		g_mapClassToDefIdx.add(i, std::string(name), hash);
+
+		ItemIndexMap::Insert x = g_mapDefIdxToClass.findForAdd(iItemDefIdx);
+		g_mapDefIdxToClass.add(x, iItemDefIdx, hash);
+
+		WeaponIDMap::Insert t = g_mapWeaponIDToDefIdx.findForAdd(iWeaponID);
+		g_mapWeaponIDToDefIdx.add(t, iWeaponID, hash);
+	}
+}
+#endif
+
+#if SOURCE_ENGINE != SE_CSS
 void ClearHashMaps()
 {
 	g_mapClassToDefIdx.clear();
@@ -305,6 +463,7 @@ void ClearHashMaps()
 	g_mapWeaponIDToDefIdx.clear();
 }
 
+#if SOURCE_ENGINE == SE_CSGO
 SMCSWeapon GetWeaponIdFromDefIdx(uint16_t iDefIdx)
 {
 	//DEAR GOD THIS IS HIDEOUS
@@ -333,6 +492,95 @@ SMCSWeapon GetWeaponIdFromDefIdx(uint16_t iDefIdx)
 	else
 		return weaponIDMap[iDefIdx];
 }
+#elif SOURCE_ENGINE == SE_CSSO
+SMCSWeapon GetWeaponIdFromName(const char* name)
+{
+	struct Entry_t {
+		const char* name;
+		SMCSWeapon id;
+	};
+
+	static Entry_t weaponIDMap[] =
+	{
+		{ "item_kevlar", SMCSWeapon_KEVLAR },
+		{ "item_assaultsuit", SMCSWeapon_ASSAULTSUIT },
+		{ "item_nvgs", SMCSWeapon_NIGHTVISION },
+		{ "item_defuser", SMCSWeapon_DEFUSER },
+		{ "weapon_ak47", SMCSWeapon_AK47 },
+		{ "weapon_aug", SMCSWeapon_AUG },
+		{ "weapon_awp", SMCSWeapon_AWP },
+		{ "weapon_bizon", SMCSWeapon_BIZON },
+		{ "weapon_c4", SMCSWeapon_C4 },
+		{ "weapon_cz75a", SMCSWeapon_CZ75A },
+		{ "weapon_deagle", SMCSWeapon_DEAGLE },
+		{ "weapon_decoy", SMCSWeapon_DECOY },
+		{ "weapon_elite", SMCSWeapon_ELITE },
+		{ "weapon_famas", SMCSWeapon_FAMAS },
+		{ "weapon_fiveseven", SMCSWeapon_FIVESEVEN },
+		{ "weapon_flashbang", SMCSWeapon_FLASHBANG },
+		{ "weapon_g3sg1", SMCSWeapon_G3SG1 },
+		{ "weapon_galilar", SMCSWeapon_GALILAR },
+		{ "weapon_glock18", SMCSWeapon_GLOCK },
+		{ "weapon_healthshot", SMCSWeapon_HEALTHSHOT },
+		{ "weapon_hegrenade", SMCSWeapon_HEGRENADE },
+		{ "weapon_hkp2000", SMCSWeapon_HKP2000 },
+		{ "weapon_incendiarygrenade", SMCSWeapon_INCGRENADE },
+		{ "weapon_knife", SMCSWeapon_KNIFE },
+		{ "weapon_knife_bayonet", SMCSWeapon_BAYONET },
+		{ "weapon_knife_bowie", SMCSWeapon_KNIFE_SURVIVAL_BOWIE },
+		{ "weapon_knife_butterfly", SMCSWeapon_KNIFE_BUTTERFLY },
+		{ "weapon_knife_classic", SMCSWeapon_KNIFE_CLASSIC },
+		{ "weapon_knife_falchion", SMCSWeapon_KNIFE_FALCHION },
+		{ "weapon_knife_flip", SMCSWeapon_KNIFE_FLIP },
+		{ "weapon_knife_gut", SMCSWeapon_KNIFE_GUT },
+		{ "weapon_knife_huntsman", SMCSWeapon_KNIFE_TATICAL },
+		{ "weapon_knife_karambit", SMCSWeapon_KNIFE_KARAMBIT },
+		{ "weapon_knife_kukri", SMCSWeapon_KNIFE_KUKRI },
+		{ "weapon_knife_m9_bayonet", SMCSWeapon_KNIFE_M9_BAYONET },
+		{ "weapon_knife_navaja", SMCSWeapon_KNIFE_GYPSY_JACKKNIFE },
+		{ "weapon_knife_nomad", SMCSWeapon_KNIFE_OUTDOOR },
+		{ "weapon_knife_paracord", SMCSWeapon_KNIFE_CORD },
+		{ "weapon_knife_shadow_daggers", SMCSWeapon_KNIFE_PUSH },
+		{ "weapon_knife_skeleton", SMCSWeapon_KNIFE_SKELETON },
+		{ "weapon_knife_stiletto", SMCSWeapon_KNIFE_STILETTO },
+		{ "weapon_knife_survival", SMCSWeapon_KNIFE_CANIS },
+		{ "weapon_knife_t", SMCSWeapon_KNIFE_T },
+		{ "weapon_knife_talon", SMCSWeapon_KNIFE_WIDOWMAKER },
+		{ "weapon_knife_ursus", SMCSWeapon_KNIFE_URSUS },
+		{ "weapon_m249", SMCSWeapon_M249 },
+		{ "weapon_m4a1_silencer", SMCSWeapon_M4A1_SILENCER },
+		{ "weapon_m4a4", SMCSWeapon_M4A1 },
+		{ "weapon_mac10", SMCSWeapon_MAC10 },
+		{ "weapon_mag7", SMCSWeapon_MAG7 },
+		{ "weapon_molotov", SMCSWeapon_MOLOTOV },
+		{ "weapon_mp5sd", SMCSWeapon_MP5NAVY },
+		{ "weapon_mp7", SMCSWeapon_MP7 },
+		{ "weapon_mp9", SMCSWeapon_MP9 },
+		{ "weapon_negev", SMCSWeapon_NEGEV },
+		{ "weapon_nova", SMCSWeapon_NOVA },
+		{ "weapon_p250", SMCSWeapon_P250 },
+		{ "weapon_p90", SMCSWeapon_P90 },
+		{ "weapon_revolver", SMCSWeapon_REVOLVER },
+		{ "weapon_sawedoff", SMCSWeapon_SAWEDOFF },
+		{ "weapon_scar20", SMCSWeapon_SCAR20 },
+		{ "weapon_sg553", SMCSWeapon_SG556 },
+		{ "weapon_smokegrenade", SMCSWeapon_SMOKEGRENADE },
+		{ "weapon_ssg08", SMCSWeapon_SSG08 },
+		{ "weapon_taser", SMCSWeapon_TASER },
+		{ "weapon_tec9", SMCSWeapon_TEC9 },
+		{ "weapon_ump45", SMCSWeapon_UMP45 },
+		{ "weapon_usp_silencer", SMCSWeapon_USP_SILENCER },
+		{ "weapon_xm1014", SMCSWeapon_XM1014 },
+	};
+
+	for (int i = 0; i < SM_ARRAYSIZE(weaponIDMap); i++) {
+		if (Q_strstr(weaponIDMap[i].name, name) != 0) {
+			return weaponIDMap[i].id;
+		}
+	}
+	return SMCSWeapon_NONE;
+}
+#endif
 
 ItemDefHashValue *GetHashValueFromWeapon(const char *szWeapon)
 {
@@ -397,21 +645,23 @@ void *GetWeaponInfo(int weaponID)
 
 const char *GetWeaponNameFromClassname(const char *weapon)
 {
-	char *szTemp = strstr((char *)weapon, "_");
-
-	if (!szTemp)
+	if (char* szTemp = strstr((char*)weapon, "weapon_"); szTemp == weapon)
 	{
-		return weapon;
+		return (const char *)((intptr_t)weapon + 7);
+	}
+	else if (char* szTemp = strstr((char*)weapon, "item_"); szTemp == weapon)
+	{
+		return (const char *)((intptr_t)weapon + 5);
 	}
 	else
 	{
-		return (const char *)((intptr_t)szTemp + 1);
+		return weapon;
 	}
 }
 
 const char *GetTranslatedWeaponAlias(const char *weapon)
 {
-#if SOURCE_ENGINE != SE_CSGO
+#if SOURCE_ENGINE == SE_CSS
 
 	static ICallWrapper *pWrapper = NULL;
 
@@ -466,7 +716,7 @@ const char *GetTranslatedWeaponAlias(const char *weapon)
 
 int AliasToWeaponID(const char *weapon)
 {
-#if SOURCE_ENGINE != SE_CSGO
+#if SOURCE_ENGINE == SE_CSS
 	static ICallWrapper *pWrapper = NULL;
 
 	if (!pWrapper)
@@ -501,7 +751,7 @@ int AliasToWeaponID(const char *weapon)
 
 const char *WeaponIDToAlias(int weaponID)
 {
-#if SOURCE_ENGINE != SE_CSGO
+#if SOURCE_ENGINE == SE_CSS
 
 	static ICallWrapper *pWrapper = NULL;
 	if (!pWrapper)
@@ -538,7 +788,7 @@ bool IsValidWeaponID(int id)
 {
 	if (id <= (int)SMCSWeapon_NONE)
 		return false;
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE != SE_CSS
 	WeaponIDMap::Result res = g_mapWeaponIDToDefIdx.find((SMCSWeapon)id);
 	if (!res.found())
 		return false;

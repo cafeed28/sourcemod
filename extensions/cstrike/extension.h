@@ -53,7 +53,7 @@ int CallPriceForward(int client, const char *weapon_name, int price);
 #define WEAPON_NIGHTVISION 52
 #define WEAPON_DEFUSER 53
 #define WEAPON_M4 16
-#else
+#elif SOURCE_ENGINE == SE_CSS
 #define WEAPON_C4 6
 #define WEAPON_KNIFE 28
 #define WEAPON_SHIELD 30
@@ -117,6 +117,8 @@ public:
 
 	const char *GetExtensionVerString();
 	const char *GetExtensionDateString();
+
+	virtual void OnCoreMapStart(edict_t* pEdictList, int edictCount, int clientMax);
 public:
 	bool ProcessCommandTarget(cmd_target_info_t *info);
 public: //IPluginsListener

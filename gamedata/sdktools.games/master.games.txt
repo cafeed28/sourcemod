@@ -75,6 +75,11 @@
 		"engine"	"csgo"
 	}
 	
+	"engine.csso.txt"
+	{
+		"engine"	"csso"
+	}
+	
 	"engine.blade.txt"
 	{
 		"engine"	"blade"

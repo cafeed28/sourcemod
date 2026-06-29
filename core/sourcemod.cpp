@@ -48,6 +48,10 @@
 #include <bridge/include/IScriptManager.h>
 #include <bridge/include/IProviderCallbacks.h>
 #include <bridge/include/ILogger.h>
+#if SOURCE_ENGINE == SE_CSSO
+#include <iomanip>
+#include <sstream>
+#endif
 
 SH_DECL_HOOK6(IServerGameDLL, LevelInit, SH_NOATTRIB, false, bool, const char *, const char *, const char *, const char *, bool, bool);
 SH_DECL_HOOK0_void(IServerGameDLL, LevelShutdown, SH_NOATTRIB, false);
@@ -275,9 +279,100 @@ void SourceModBase::StartSourceMod(bool late)
 	SH_ADD_HOOK(IServerGameDLL, Think, gamedll, SH_MEMBER(logicore.callbacks, &IProviderCallbacks::OnThink), false);
 }
 
+#if SOURCE_ENGINE == SE_CSSO
+/* CS:SO replaced map entities string with map entities KeyValues. HACK: Rebuild the map entities string */
+static std::string MapEntitiesToString(const KeyValues* pKVMapEntitiesIn)
+{
+	KeyValues* pKVMapEntities = const_cast<KeyValues*>(pKVMapEntitiesIn);
+
+	std::ostringstream stream;
+	for (KeyValues* pKVEntity = pKVMapEntities->GetFirstSubKey(); pKVEntity; pKVEntity = pKVEntity->GetNextKey())
+	{
+		stream << "{\n";
+		for (KeyValues* pValue = pKVEntity->GetFirstValue(); pValue; pValue = pValue->GetNextValue())
+		{
+			stream << '"' << pValue->GetName() << "\" \"" << pValue->GetString() << '"' << '\n';
+		}
+		stream << "\"classname\" \"" << pKVEntity->GetName() << '"' << '\n';
+		stream << "}\n";
+	}
+	return stream.str();
+}
+
+static bool MapEntitiesFromString(KeyValues *pKVMapEntities, char const *pMapEntities)
+{
+	pKVMapEntities->SetName("Entities");
+
+	std::istringstream mapEntities(pMapEntities);
+	
+	for (;;) {
+		std::string token;
+		mapEntities >> std::ws >> token >> std::ws;
+		
+		// Assert that we're at the start of a new block, otherwise we're done parsing
+		if (token != "{") {
+			if (token == "\0") {
+				break;
+			} else {
+				return nullptr /* EntityLumpParseResult {
+					Status_UnexpectedChar, mapEntities.tellg()
+				} */;
+			}
+		}
+
+		KeyValues* pKVEntity = pKVMapEntities->CreateNewKey();
+
+		/**
+		 * Parse key / value pairs until we reach a closing brace.  We currently assume there
+		 * are only quoted keys / values up to the next closing brace.
+		 *
+		 * The SDK suggests that there are cases that could use non-quoted symbols and nested
+		 * braces (`shared/mapentities_shared.cpp::MapEntity_ParseToken`), but I haven't seen
+		 * those in practice.
+		 */
+		while (mapEntities.peek() != '}') {
+			std::string key, value;
+
+			if (mapEntities.peek() != '"') {
+				return nullptr /* EntityLumpParseResult {
+					Status_UnexpectedChar, mapEntities.tellg()
+				} */;
+			}
+			mapEntities >> quoted(key) >> std::ws;
+
+			if (mapEntities.peek() != '"') {
+				return nullptr /* EntityLumpParseResult {
+					Status_UnexpectedChar, mapEntities.tellg()
+				} */;
+			}
+			mapEntities >> quoted(value) >> std::ws;
+
+			if (key == "classname") {
+				pKVEntity->SetName(value.c_str());
+			} else {
+				pKVEntity->CreateKey(key.c_str())->SetStringValue(value.c_str());
+			}
+		}
+		mapEntities.get();
+	}
+
+	return pKVMapEntities;
+}
+#endif
+
+#if SOURCE_ENGINE == SE_CSSO
+#define pMapEntities pKVMapEntities
+#endif
+
 static bool g_LevelEndBarrier = false;
 bool SourceModBase::LevelInit(char const *pMapName, char const *pMapEntities, char const *pOldLevel, char const *pLandmarkName, bool loadGame, bool background)
 {
+#if SOURCE_ENGINE == SE_CSSO
+#undef pMapEntities
+	std::string sMapEntities = MapEntitiesToString(reinterpret_cast<const KeyValues *>(pKVMapEntities));
+	char const *pMapEntities = sMapEntities.c_str();
+#endif
+
 	/* Seed rand() globally per map */
 	srand(time(NULL));
 	
@@ -340,7 +435,15 @@ bool SourceModBase::LevelInit(char const *pMapName, char const *pMapEntities, ch
 		RETURN_META_VALUE(MRES_IGNORED, true);
 	}
 
-	RETURN_META_VALUE_NEWPARAMS(MRES_HANDLED, true, &IServerGameDLL::LevelInit, (pMapName, logicore.GetEntityLumpString(), pOldLevel, pLandmarkName, loadGame, background));
+	pMapEntities = logicore.GetEntityLumpString();
+
+#if SOURCE_ENGINE == SE_CSSO
+	static KeyValues* s_pKVMapEntities = new KeyValues("Entities");
+	MapEntitiesFromString(s_pKVMapEntities, pMapEntities);
+	pMapEntities = reinterpret_cast<char const *>(s_pKVMapEntities);
+#endif
+
+	RETURN_META_VALUE_NEWPARAMS(MRES_HANDLED, true, &IServerGameDLL::LevelInit, (pMapName, pMapEntities, pOldLevel, pLandmarkName, loadGame, background));
 }
 
 const char *SourceModBase::GetMapEntitiesString()
@@ -348,6 +451,11 @@ const char *SourceModBase::GetMapEntitiesString()
 	const char *pNewMapEntities = logicore.GetEntityLumpString();
 	if (pNewMapEntities != nullptr)
 	{
+#if SOURCE_ENGINE == SE_CSSO
+		static KeyValues* s_pKVMapEntities = new KeyValues("Entities");
+		MapEntitiesFromString(s_pKVMapEntities, pNewMapEntities);
+		pNewMapEntities = reinterpret_cast<char const *>(s_pKVMapEntities);
+#endif
 		RETURN_META_VALUE(MRES_SUPERCEDE, pNewMapEntities);
 	}
 	RETURN_META_VALUE(MRES_IGNORED, NULL);

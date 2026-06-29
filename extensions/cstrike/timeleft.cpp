@@ -31,6 +31,7 @@
 
 #include "extension.h"
 #include "timeleft.h"
+#include "util_cstrike.h"
 
 TimeLeftEvents g_TimeLeftEvents;
 bool get_new_timeleft_offset = false;
@@ -77,11 +78,7 @@ void TimeLeftEvents::FireGameEvent(IGameEvent *event)
 	}
 	else if (strcmp(name, "round_end") == 0)
 	{
-#if SOURCE_ENGINE == SE_CSGO
-		if (event->GetInt("reason") == 16)
-#else
-		if (event->GetInt("reason") == 15)
-#endif
+		if (event->GetInt("reason") == RoundEndReasonToGame(SMCSRoundEnd_GameStart))
 		{
 			get_new_timeleft_offset = true;
 		}

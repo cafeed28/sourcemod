@@ -69,7 +69,7 @@ enum SMCSWeapon
 	SMCSWeapon_SHIELD,
 	SMCSWeapon_KEVLAR,
 	SMCSWeapon_ASSAULTSUIT,
-	SMCSWeapon_NIGHTVISION,
+	SMCSWeapon_NIGHTVISION, //Anything below is CS:GO ONLY
 	SMCSWeapon_GALILAR,
 	SMCSWeapon_BIZON,
 	SMCSWeapon_MAG7,
@@ -93,7 +93,79 @@ enum SMCSWeapon
 	SMCSWeapon_DEFUSER,
 	SMCSWeapon_HEAVYASSAULTSUIT,
 	SMCSWeapon_MAXWEAPONIDS, //This only exists here... the include has more. This is for easy array construction
+	//The rest are actual item definition indexes for CS:GO
+	SMCSWeapon_CUTTERS = 56,
+	SMCSWeapon_HEALTHSHOT = 57,
+	SMCSWeapon_KNIFE_T = 59,
+	SMCSWeapon_M4A1_SILENCER = 60,
+	SMCSWeapon_USP_SILENCER = 61,
+	SMCSWeapon_CZ75A = 63,
+	SMCSWeapon_REVOLVER = 64,
+	SMCSWeapon_TAGGRENADE = 68,
+	SMCSWeapon_FISTS = 69,
+	SMCSWeapon_BREACHCHARGE = 70,
+	SMCSWeapon_TABLET = 72,
+	SMCSWeapon_MELEE = 74,
+	SMCSWeapon_AXE = 75,
+	SMCSWeapon_HAMMER = 76,
+	SMCSWeapon_SPANNER = 78,
+	SMCSWeapon_KNIFE_GHOST = 80,
+	SMCSWeapon_FIREBOMB = 81,
+	SMCSWeapon_DIVERSION = 82,
+	SMCSWeapon_FRAGGRENADE = 83,
+	SMCSWeapon_SNOWBALL = 84,
+	SMCSWeapon_BUMPMINE = 85,
+	SMCSWeapon_MAX_WEAPONS_NO_KNIFES, // Max without the knife item defs, useful when treating all knives as a regular knife.
+	SMCSWeapon_BAYONET = 500,
+	SMCSWeapon_KNIFE_CLASSIC = 503,
+	SMCSWeapon_KNIFE_FLIP = 505,
+	SMCSWeapon_KNIFE_GUT = 506,
+	SMCSWeapon_KNIFE_KARAMBIT = 507,
+	SMCSWeapon_KNIFE_M9_BAYONET = 508,
+	SMCSWeapon_KNIFE_TATICAL = 509,
+	SMCSWeapon_KNIFE_FALCHION = 512,
+	SMCSWeapon_KNIFE_SURVIVAL_BOWIE = 514,
+	SMCSWeapon_KNIFE_BUTTERFLY = 515,
+	SMCSWeapon_KNIFE_PUSH = 516,
+	SMCSWeapon_KNIFE_CORD = 517,
+	SMCSWeapon_KNIFE_CANIS = 518,
+	SMCSWeapon_KNIFE_URSUS = 519,
+	SMCSWeapon_KNIFE_GYPSY_JACKKNIFE = 520,
+	SMCSWeapon_KNIFE_OUTDOOR = 521,
+	SMCSWeapon_KNIFE_STILETTO = 522,
+	SMCSWeapon_KNIFE_WIDOWMAKER = 523,
+	SMCSWeapon_KNIFE_SKELETON = 525,
+	SMCSWeapon_KNIFE_KUKRI = 526
 };
+
+enum SMCSRoundEndReason
+{
+	SMCSRoundEnd_Invalid = -1, // only exists here
+	SMCSRoundEnd_TargetBombed = 0,           /**< [S, GO, SO]  Target Successfully Bombed! */
+	SMCSRoundEnd_VIPEscaped,                 /**< [S]          The VIP has escaped! */
+	SMCSRoundEnd_VIPKilled,                  /**< [S]          VIP has been assassinated! */
+	SMCSRoundEnd_TerroristsEscaped,          /**< [S, GO]      The terrorists have escaped! */
+	SMCSRoundEnd_CTStoppedEscape,            /**< [S, GO]      The CTs have prevented most of the terrorists from escaping! */
+	SMCSRoundEnd_TerroristsStopped,          /**< [S, GO]      Escaping terrorists have all been neutralized! */
+	SMCSRoundEnd_BombDefused,                /**< [S, GO, SO]  The bomb has been defused! */
+	SMCSRoundEnd_CTWin,                      /**< [S, GO, SO]  Counter-Terrorists Win! */
+	SMCSRoundEnd_TerroristWin,               /**< [S, GO, SO]  Terrorists Win! */
+	SMCSRoundEnd_Draw,                       /**< [S, GO, SO]  Round Draw! */
+	SMCSRoundEnd_HostagesRescued,            /**< [S, GO, SO]  All Hostages have been rescued! */
+	SMCSRoundEnd_TargetSaved,                /**< [S, GO, SO]  Target has been saved! */
+	SMCSRoundEnd_HostagesNotRescued,         /**< [S, GO, SO]  Hostages have not been rescued! */
+	SMCSRoundEnd_TerroristsNotEscaped,       /**< [S, GO]      Terrorists have not escaped! */
+	SMCSRoundEnd_VIPNotEscaped,              /**< [S]          VIP has not escaped! */
+	SMCSRoundEnd_GameStart,                  /**< [S, GO, SO]  Game Commencing! */
+	SMCSRoundEnd_TerroristsSurrender,        /**< [GO, SO]     Terrorists Surrender */
+	SMCSRoundEnd_CTSurrender,                /**< [GO, SO]     CTs Surrender */
+	SMCSRoundEnd_TerroristsPlanted,          /**< [GO]         Terrorists Planted the bomb */
+	SMCSRoundEnd_CTsReachedHostage,          /**< [GO]         CTs Reached the hostage */
+	SMCSRoundEnd_Count
+};
+
+int RoundEndReasonFromGame(int reason); // convert from game's value to cstrike.inc
+int RoundEndReasonToGame(int reason); // convert from cstrike.inc's value to game
 
 #if SOURCE_ENGINE == SE_CSGO
 //These are the ItemDefintion indexs they are used as a reference to create GetWeaponIdFromDefIdx
@@ -159,7 +231,6 @@ enum CSGOItemDefs
 	CSGOItemDef_MAXDEFS,
 };
 */
-struct ItemDefHashValue;
 class CEconItemView;
 class CCSWeaponData;
 class CEconItemSchema;
@@ -190,11 +261,18 @@ CEconItemView *GetEconItemView(CBaseEntity *pEntity, int iSlot);
 CCSWeaponData *GetCCSWeaponData(CEconItemView *view);
 CEconItemSchema *GetItemSchema();
 CEconItemDefinition *GetItemDefintionByName(const char *classname);
+SMCSWeapon GetWeaponIdFromDefIdx(uint16_t iDefIdx);
+#endif
+#if SOURCE_ENGINE == SE_CSSO
+SMCSWeapon GetWeaponIdFromName(const char* classname);
+#endif
+#if SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
+struct ItemDefHashValue;
 void CreateHashMaps();
 void ClearHashMaps();
-SMCSWeapon GetWeaponIdFromDefIdx(uint16_t iDefIdx);
 ItemDefHashValue *GetHashValueFromWeapon(const char *szWeapon);
-#else //CS:S ONLY STUFF
+#endif
+#if SOURCE_ENGINE != SE_CSGO
 void *GetWeaponInfo(int weaponID);
 #endif
 

@@ -1,0 +1,212 @@
+"Games"
+{
+	// Sounds
+	"#default"
+	{
+		"Keys"
+		{
+			"SlapSoundCount"	"3"
+			"SlapSound1"		"player/damage1.wav"
+			"SlapSound2"		"player/damage2.wav"
+			"SlapSound2"		"player/damage3.wav"
+		}
+	}
+
+	// General Temp Entities
+	"#default"
+	{
+		"Offsets"
+		{
+			"GetTEName"
+			{
+				"windows64"	"8"
+			}
+			"GetTENext"
+			{
+				"windows64"	"16"
+			}
+			"TE_GetServerClass"
+			{
+				"windows64"	"0"
+			}
+		}
+	}
+
+	// CBaseEntityOutput::FireOutput
+	"#default"
+	{
+		"Signatures"
+		{
+			// STRING: "(%0.2f) output: (%s,%s) -> (%s,%s)(%s)\n"
+			"FireOutput"
+			{
+				"library"	"server"
+				"windows64"	"\x48\x8B\xC4\x48\x89\x50\x2A\x48\x89\x48\x2A\x56"
+			}
+		}
+	}
+
+	// General GameRules
+	"#default"
+	{
+		"Keys"
+		{
+			"GameRulesProxy"		"CCSGameRulesProxy"
+			"GameRulesDataTable"	"cs_gamerules_data"
+		}
+	}
+	
+	// SetUserInfo data
+	"#default"
+	{
+		"Offsets"
+		{
+			// CBaseClient::SetName + 1
+			"SetUserCvar"
+			{
+				"windows64"	"18"
+			}
+			// CBaseClient::SetName
+			// STRING: "(%d)%-.*s"
+			"SetClientName"
+			{
+				"windows64"	"17"
+			}
+			// Offset into CBaseClient - Used by CBaseServer::UpdateUserSettings to determine when changes have been made.
+			// Find CBaseClient::UpdateUserSettings (strings "net_maxroutable", "cl_updaterate" etc) and the offset is set to 0 near the end.
+			// mov     byte ptr [esi+0A0h], 0
+			"InfoChanged"
+			{
+				"windows64"	"160"
+			}
+		}
+	}
+	
+	"#default"
+	{
+		"Offsets"
+		{
+			// ScriptSetOwnerEntity
+			"SetOwnerEntity"
+			{
+				"windows64"	"21"
+			}
+			// STRING: "NULL Ent in GiveNamedItem!"
+			"GiveNamedItem"
+			{
+				"windows64"	"420"
+			}
+			// Weapon_* functions can be found in vscript's "ScriptWeapon_*"
+			"Weapon_GetSlot"
+			{
+				"windows64"	"282"
+			}
+			// sdkhooks Weapon_Equip
+			"WeaponEquip"
+			{
+				"windows64"	"274"
+			}
+			// sdkgooks OnTakeDamage_Alive - 2
+			"RemovePlayerItem"
+			{
+				"windows64"	"284"
+			}
+			// Extinguish - 4
+			"Ignite"
+			{
+				"windows64"	"220"
+			}
+			// xref "General.StopBurning", in bigger function (CEntityFlame::FlameThink):
+			//   EmitSound("General.StopBurning");
+			//   if (m_hEntAttached != -1) {
+			//     if (g_pEntityList[v50 + 2] == v49) {
+			//       v51 = g_pEntityList[v50 + 1];
+			//       if (v51) {
+			//         pAttachedCC = (*(*v51 + 608LL))(v51); // MyCombatCharacterPointer
+			//         if (pAttachedCC)
+			//           (*(*pAttachedCC + 1792LL))(v52); // Extinguish
+			//       }
+			//     }
+			//   }
+			"Extinguish"
+			{
+				"windows64"	"224"
+			}
+			// STRINGS: "entindex", "base_player_teleported"
+			"Teleport"
+			{
+				"windows64"	"115"
+			}
+			// xref "mp_allowspectators", in bigger function (CBasePlayer::ClientCommand):
+			//   ConVarRef::ConVarRef(mp_allowspectators, "mp_allowspectators");
+			//   if (!ConVarRef::GetBool(mp_allowspectators) || ...)
+			//   {
+			//     if (a1[360] != 2) // IsDead
+			//       (*(*a1 + 3696LL))(a1, 0LL, 0LL); // CommitSuicide
+			//     ...
+			//     return 1;
+			//   }
+			"CommitSuicide"
+			{
+				"windows64"	"462"
+			}
+			// xref "TRAIN(%s): Blocked by %s\n"
+			//   DevMsg(1LL, "TRAIN(%s): Blocked by %s\n", v5, v4);
+			//   v6 = fminf(fabs(...), 50.0);
+			//   (*(*a2 + 1184LL))(a2, v31, 0LL); // GetVelocity
+			//   if ( v32 != 0.0 )
+			//     return;
+			//   ...
+			//   return;
+			"GetVelocity"
+			{
+				"windows64"	"148"
+			}
+			// find test_dispatcheffect callback:
+			// if ( *a1 >= 3 )
+			//   v4 = atoi(*(a1 + 1048));
+			// if ( *a1 >= 4 )
+			//   v6 = atoi(*(a1 + 1056));
+			// if ( *a1 >= 5 )
+			//   v7 = atof(*(a1 + 1064));
+			// if ( *a1 >= 6 )
+			//   v5 = atof(*(a1 + 1072));
+			// v8 = (*(*v3 + 1112LL))(v3); // EyeAngles
+			"EyeAngles"
+			{
+				"windows64"	"139"
+			}
+			// STRINGS: "unhandled input: (%s) -> (%s,%s)", "activator", "caller", "<null>"
+			"AcceptInput"
+			{
+				"windows64"	"40"
+			}
+			// CBaseEntity::SetModel: STRING: "Setting CBaseEntity to non-brush model %s"
+			"SetEntityModel"
+			{
+				"windows64"	"28"
+			}
+			// STRING: "RadialLinkController (%s) is far from its parent!"
+			"Activate"
+			{
+				"windows64"	"37"
+			}
+			// STRING: "Client cmd out of sync (delta %i).\n"
+			"PlayerRunCmd"
+			{
+				"windows64"	"439"
+			}
+			// xref "BaseCombatCharacter.AmmoPickup", smaller function is CBaseCombatCharacter::GiveAmmo
+			"GiveAmmo"
+			{
+				"windows64"	"266"
+			}
+			// CAI_BaseNPC::PopulatePoseParameters + 1
+			// CAI_BaseNPC::PopulatePoseParameters: STRINGS: "aim_yaw", "move_yaw", "aim_pitch"
+			"GetAttachment"
+			{
+				"windows64"	"216"
+			}
+		}
+	}
+}

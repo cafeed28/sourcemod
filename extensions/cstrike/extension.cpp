@@ -64,10 +64,10 @@ ISDKTools *g_pSDKTools = NULL;
 
 bool CStrike::SDK_OnLoad(char *error, size_t maxlength, bool late)
 {
-#if SOURCE_ENGINE != SE_CSGO
+#if SOURCE_ENGINE != SE_CSGO && SOURCE_ENGINE != SE_CSSO
 	if (strcmp(g_pSM->GetGameFolderName(), "cstrike") != 0)
 	{
-		ke::SafeStrcpy(error, maxlength, "Cannot Load Cstrike Extension on mods other than CS:S and CS:GO");
+		ke::SafeStrcpy(error, maxlength, "Cannot Load Cstrike Extension on mods other than CS:S, CS:GO and CS:SO");
 		return false;
 	}
 #endif
@@ -167,6 +167,8 @@ void CStrike::SDK_OnUnload()
 
 #if SOURCE_ENGINE == SE_CSGO
 	rulesfix.OnUnload();
+#endif
+#if SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	ClearHashMaps();
 #endif
 }
@@ -338,6 +340,13 @@ const char *CStrike::GetExtensionVerString()
 const char *CStrike::GetExtensionDateString()
 {
 	return SOURCEMOD_BUILD_TIME;
+}
+
+void CStrike::OnCoreMapStart(edict_t* pEdictList, int edictCount, int clientMax)
+{
+#if SOURCE_ENGINE == SE_CSSO
+	CreateHashMaps(); // do it here because WeaponIDs are initialized during precache
+#endif
 }
 
 void CStrike::OnPluginLoaded(IPlugin *plugin)

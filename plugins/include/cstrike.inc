@@ -52,28 +52,26 @@
 
 enum CSRoundEndReason
 {
-	CSRoundEnd_TargetBombed = 0,           /**< Target Successfully Bombed! */
-	CSRoundEnd_VIPEscaped,                 /**< The VIP has escaped! - Doesn't exist on CS:GO */
-	CSRoundEnd_VIPKilled,                  /**< VIP has been assassinated! - Doesn't exist on CS:GO */
-	CSRoundEnd_TerroristsEscaped,          /**< The terrorists have escaped! */
-	CSRoundEnd_CTStoppedEscape,            /**< The CTs have prevented most of the terrorists from escaping! */
-	CSRoundEnd_TerroristsStopped,          /**< Escaping terrorists have all been neutralized! */
-	CSRoundEnd_BombDefused,                /**< The bomb has been defused! */
-	CSRoundEnd_CTWin,                      /**< Counter-Terrorists Win! */
-	CSRoundEnd_TerroristWin,               /**< Terrorists Win! */
-	CSRoundEnd_Draw,                       /**< Round Draw! */
-	CSRoundEnd_HostagesRescued,            /**< All Hostages have been rescued! */
-	CSRoundEnd_TargetSaved,                /**< Target has been saved! */
-	CSRoundEnd_HostagesNotRescued,         /**< Hostages have not been rescued! */
-	CSRoundEnd_TerroristsNotEscaped,       /**< Terrorists have not escaped! */
-	CSRoundEnd_VIPNotEscaped,              /**< VIP has not escaped! - Doesn't exist on CS:GO */
-	CSRoundEnd_GameStart,                  /**< Game Commencing! */
-	
-	// The below only exist on CS:GO
-	CSRoundEnd_TerroristsSurrender,        /**< Terrorists Surrender */
-	CSRoundEnd_CTSurrender,                /**< CTs Surrender */
-	CSRoundEnd_TerroristsPlanted,          /**< Terrorists Planted the bomb */
-	CSRoundEnd_CTsReachedHostage           /**< CTs Reached the hostage */
+	CSRoundEnd_TargetBombed = 0,           /**< [S, GO, SO]  Target Successfully Bombed! */
+	CSRoundEnd_VIPEscaped,                 /**< [S]          The VIP has escaped! */
+	CSRoundEnd_VIPKilled,                  /**< [S]          VIP has been assassinated! */
+	CSRoundEnd_TerroristsEscaped,          /**< [S, GO]      The terrorists have escaped! */
+	CSRoundEnd_CTStoppedEscape,            /**< [S, GO]      The CTs have prevented most of the terrorists from escaping! */
+	CSRoundEnd_TerroristsStopped,          /**< [S, GO]      Escaping terrorists have all been neutralized! */
+	CSRoundEnd_BombDefused,                /**< [S, GO, SO]  The bomb has been defused! */
+	CSRoundEnd_CTWin,                      /**< [S, GO, SO]  Counter-Terrorists Win! */
+	CSRoundEnd_TerroristWin,               /**< [S, GO, SO]  Terrorists Win! */
+	CSRoundEnd_Draw,                       /**< [S, GO, SO]  Round Draw! */
+	CSRoundEnd_HostagesRescued,            /**< [S, GO, SO]  All Hostages have been rescued! */
+	CSRoundEnd_TargetSaved,                /**< [S, GO, SO]  Target has been saved! */
+	CSRoundEnd_HostagesNotRescued,         /**< [S, GO, SO]  Hostages have not been rescued! */
+	CSRoundEnd_TerroristsNotEscaped,       /**< [S, GO]      Terrorists have not escaped! */
+	CSRoundEnd_VIPNotEscaped,              /**< [S]          VIP has not escaped! */
+	CSRoundEnd_GameStart,                  /**< [S, GO, SO]  Game Commencing! */
+	CSRoundEnd_TerroristsSurrender,        /**< [GO, SO]     Terrorists Surrender */
+	CSRoundEnd_CTSurrender,                /**< [GO, SO]     CTs Surrender */
+	CSRoundEnd_TerroristsPlanted,          /**< [GO]         Terrorists Planted the bomb */
+	CSRoundEnd_CTsReachedHostage           /**< [GO]         CTs Reached the hostage */
 };
 
 enum CSWeaponID
@@ -111,7 +109,8 @@ enum CSWeaponID
 	CSWeapon_SHIELD,
 	CSWeapon_KEVLAR,
 	CSWeapon_ASSAULTSUIT,
-	CSWeapon_NIGHTVISION, //Anything below is CS:GO ONLY
+	CSWeapon_NIGHTVISION,
+	// Anything below is only in CS:GO and CS:SO
 	CSWeapon_GALILAR,
 	CSWeapon_BIZON,
 	CSWeapon_MAG7,
@@ -134,7 +133,7 @@ enum CSWeaponID
 	CSWeapon_INCGRENADE,
 	CSWeapon_DEFUSER,
 	CSWeapon_HEAVYASSAULTSUIT,
-	//The rest are actual item definition indexes for CS:GO
+	// The rest are actual item definition indexes for CS:GO
 	CSWeapon_CUTTERS = 56,
 	CSWeapon_HEALTHSHOT = 57,
 	CSWeapon_KNIFE_T = 59,
@@ -176,7 +175,8 @@ enum CSWeaponID
 	CSWeapon_KNIFE_STILETTO = 522,
 	CSWeapon_KNIFE_WIDOWMAKER = 523,
 	CSWeapon_KNIFE_SKELETON = 525,
-	CSWeapon_MAX_WEAPONS //THIS MUST BE LAST, EASY WAY TO CREATE LOOPS. When looping, do CS_IsValidWeaponID(i), to check.
+	CSWeapon_KNIFE_KUKRI = 526, // Exists only in CS:SO
+	CSWeapon_MAX_WEAPONS // THIS MUST BE LAST, EASY WAY TO CREATE LOOPS. When looping, do CS_IsValidWeaponID(i), to check.
 };
 
 /**

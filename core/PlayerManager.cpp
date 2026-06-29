@@ -652,7 +652,7 @@ void PlayerManager::OnClientPutInServer(edict_t *pEntity, const char *playername
 
 		int userId = engine->GetPlayerUserId(pEntity);
 #if (SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_HL2DM || SOURCE_ENGINE == SE_DODS || SOURCE_ENGINE == SE_TF2 || SOURCE_ENGINE == SE_SDK2013 \
-	|| SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_NUCLEARDAWN || SOURCE_ENGINE == SE_PVKII)
+	|| SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_NUCLEARDAWN || SOURCE_ENGINE == SE_PVKII || SOURCE_ENGINE == SE_CSSO)
 		static ConVar *tv_name = icvar->FindVar("tv_name");
 #endif
 #if SOURCE_ENGINE == SE_TF2
@@ -681,7 +681,7 @@ void PlayerManager::OnClientPutInServer(edict_t *pEntity, const char *playername
 #elif SOURCE_ENGINE == SE_BLADE
 				|| strcmp(playername, "BBTV") == 0
 #elif (SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_HL2DM || SOURCE_ENGINE == SE_DODS || SOURCE_ENGINE == SE_TF2 || SOURCE_ENGINE == SE_SDK2013 \
-	|| SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_NUCLEARDAWN || SOURCE_ENGINE == SE_PVKII)
+	|| SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_NUCLEARDAWN || SOURCE_ENGINE == SE_PVKII || SOURCE_ENGINE == SE_CSSO)
 				|| (tv_name && strcmp(playername, tv_name->GetString()) == 0) || (tv_name && tv_name->GetString()[0] == 0 && strcmp(playername, "unnamed") == 0)
 #else
 				|| strcmp(playername, "SourceTV") == 0
@@ -2042,7 +2042,8 @@ void CPlayer::Initialize(const char *name, const char *ip, edict_t *pEntity)
 	|| SOURCE_ENGINE == SE_INSURGENCY \
 	|| SOURCE_ENGINE == SE_DOI   \
 	|| SOURCE_ENGINE == SE_BLADE \
-	|| SOURCE_ENGINE == SE_PVKII
+	|| SOURCE_ENGINE == SE_PVKII \
+	|| SOURCE_ENGINE == SE_CSSO
 	m_pIClient = engine->GetIServer()->GetClient(m_iIndex - 1);
 #else
   #if SOURCE_ENGINE == SE_SDK2013

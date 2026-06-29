@@ -36,7 +36,7 @@
 #include <server_class.h>
 #include <sm_argbuffer.h>
 
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE != SE_CSS
 #include "itemdef-hash.h"
 #endif
 
@@ -301,13 +301,9 @@ static cell_t CS_TerminateRound(IPluginContext *pContext, const cell_t *params)
 		return pContext->ThrowNativeError("GameRules not available. TerminateRound native disabled.");
 	}
 
-	int reason = params[2];
+	int reason = RoundEndReasonToGame(params[2]);
 	
-#if SOURCE_ENGINE == SE_CSGO
-	reason++;
-#endif
-	
-#if SOURCE_ENGINE == SE_CSS
+#if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_CSSO
 	static ICallWrapper *pWrapper = NULL;
 
 	if (!pWrapper)
@@ -386,7 +382,7 @@ static cell_t CS_TerminateRound(IPluginContext *pContext, const cell_t *params)
 
 static cell_t CS_WeaponIDToAlias(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE != SE_CSS
 	if(g_mapClassToDefIdx.elements() == 0)
 		return pContext->ThrowNativeError("Failed to create weapon hashmap");
 #endif
@@ -421,7 +417,7 @@ static cell_t CS_GetTranslatedWeaponAlias(IPluginContext *pContext, const cell_t
 	return 1;
 }
 
-#if SOURCE_ENGINE != SE_CSGO
+#if SOURCE_ENGINE == SE_CSS
 static cell_t CS_GetWeaponPrice(IPluginContext *pContext, const cell_t *params)
 {
 	CBaseEntity *pEntity;
@@ -498,7 +494,7 @@ static cell_t CS_GetWeaponPrice(IPluginContext *pContext, const cell_t *params)
 
 static cell_t CS_AliasToWeaponID(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE != SE_CSS
 	if (g_mapClassToDefIdx.elements() == 0)
 		return pContext->ThrowNativeError("Failed to create weapon hashmap");
 #endif
@@ -789,7 +785,7 @@ static inline cell_t SetPlayerStringVar(IPluginContext *pContext, const cell_t *
 
 static cell_t CS_GetClientClanTag(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	return GetPlayerStringVar(pContext, params, "ClanTag");
 #else
 	static void *addr;
@@ -832,7 +828,7 @@ static cell_t CS_GetClientClanTag(IPluginContext *pContext, const cell_t *params
 
 static cell_t CS_SetClientClanTag(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	return SetPlayerStringVar(pContext, params, "ClanTag");
 #else
 	static ICallWrapper *pWrapper = NULL;
@@ -875,7 +871,7 @@ static cell_t CS_GetMVPCount(IPluginContext *pContext, const cell_t *params)
 
 static cell_t CS_SetClientContributionScore(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	return SetPlayerVar<int>(pContext, params, "CScore");
 #else
 	return pContext->ThrowNativeError("SetClientContributionScore is not supported on this game");
@@ -884,7 +880,7 @@ static cell_t CS_SetClientContributionScore(IPluginContext *pContext, const cell
 
 static cell_t CS_GetClientContributionScore(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	return GetPlayerVar<int>(pContext, params, "CScore");
 #else
 	return pContext->ThrowNativeError("GetClientContributionScore is not supported on this game");
@@ -893,7 +889,7 @@ static cell_t CS_GetClientContributionScore(IPluginContext *pContext, const cell
 
 static cell_t CS_SetClientAssists(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	return SetPlayerVar<int>(pContext, params, "Assists");
 #else
 	return pContext->ThrowNativeError("SetClientAssists is not supported on this game");
@@ -902,7 +898,7 @@ static cell_t CS_SetClientAssists(IPluginContext *pContext, const cell_t *params
 
 static cell_t CS_GetClientAssists(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE == SE_CSGO || SOURCE_ENGINE == SE_CSSO
 	return GetPlayerVar<int>(pContext, params, "Assists");
 #else
 	return pContext->ThrowNativeError("GetClientAssists is not supported on this game");
@@ -931,7 +927,7 @@ static cell_t CS_UpdateClientModel(IPluginContext *pContext, const cell_t *param
 
 static cell_t CS_ItemDefIndexToID(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE != SE_CSS
 	ItemIndexMap::Result res = g_mapDefIdxToClass.find((uint16_t)params[1]);
 
 	if (!res.found())
@@ -945,7 +941,7 @@ static cell_t CS_ItemDefIndexToID(IPluginContext *pContext, const cell_t *params
 
 static cell_t CS_WeaponIDToItemDefIndex(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE != SE_CSS
 	WeaponIDMap::Result res = g_mapWeaponIDToDefIdx.find((SMCSWeapon)params[1]);
 
 	if (!res.found())
@@ -959,7 +955,7 @@ static cell_t CS_WeaponIDToItemDefIndex(IPluginContext *pContext, const cell_t *
 
 static cell_t CS_WeaponIDToLoadoutSlot(IPluginContext *pContext, const cell_t *params)
 {
-#if SOURCE_ENGINE == SE_CSGO
+#if SOURCE_ENGINE != SE_CSS
 	WeaponIDMap::Result res = g_mapWeaponIDToDefIdx.find((SMCSWeapon)params[1]);
 
 	if (!res.found())

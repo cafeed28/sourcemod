@@ -331,9 +331,10 @@ void TempEntityManager::Initialize()
 	|| SOURCE_ENGINE == SE_BMS     \
 	|| SOURCE_ENGINE == SE_BLADE   \
 	|| SOURCE_ENGINE == SE_NUCLEARDAWN \
-	|| SOURCE_ENGINE == SE_PVKII
+	|| SOURCE_ENGINE == SE_PVKII   \
+	|| SOURCE_ENGINE == SE_CSSO
 
-	if (g_SMAPI->GetServerFactory(false)("VSERVERTOOLS003", nullptr))
+	if (g_SMAPI->GetServerFactory(false)("VSERVERTOOLS003", nullptr) || SOURCE_ENGINE == SE_CSSO)
 	{
 		m_ListHead = servertools->GetTempEntList();
 	}

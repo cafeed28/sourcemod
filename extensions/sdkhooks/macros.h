@@ -43,6 +43,10 @@
 		SH_MANUALHOOK_RECONFIGURE(gamedataname, offset, 0, 0); \
 		SET_PRE_##supportsPre(gamedataname) \
 		SET_POST_##supportsPost(gamedataname) \
+	} \
+	else \
+	{ \
+		g_pSM->LogError(myself, "CHECKOFFSET failed: %s", #gamedataname); \
 	}
 
 #define CHECKOFFSET_W(gamedataname, supportsPre, supportsPost) \
@@ -53,6 +57,10 @@
 		SH_MANUALHOOK_RECONFIGURE(Weapon_##gamedataname, offset, 0, 0); \
 		SET_PRE_##supportsPre(Weapon##gamedataname) \
 		SET_POST_##supportsPost(Weapon##gamedataname) \
+	} \
+	else \
+	{ \
+		g_pSM->LogError(myself, "CHECKOFFSET_W failed: %s", #gamedataname); \
 	}
 
 #define HOOKLOOP \

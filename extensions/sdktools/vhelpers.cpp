@@ -712,7 +712,8 @@ CEntityFactoryDictionary *GetEntityFactoryDictionary()
 	|| SOURCE_ENGINE == SE_BMS     \
 	|| SOURCE_ENGINE == SE_BLADE   \
 	|| SOURCE_ENGINE == SE_NUCLEARDAWN \
-	|| SOURCE_ENGINE == SE_PVKII
+	|| SOURCE_ENGINE == SE_PVKII   \
+	|| SOURCE_ENGINE == SE_CSSO
 	dict = (CEntityFactoryDictionary *) servertools->GetEntityFactoryDictionary();
 #else
 	if (dict == NULL)

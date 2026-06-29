@@ -328,6 +328,8 @@ void BaseMenuStyle::ClientPressedKey(int client, unsigned int key_press)
 							CHAN_AUTO, 
 #if SOURCE_ENGINE >= SE_PORTAL2
 							sound->c_str(),
+#endif
+#if SOURCE_ENGINE >= SE_PORTAL2 || SOURCE_ENGINE == SE_CSSO
 							-1, 
 #endif
 							sound->c_str(),
@@ -339,7 +341,7 @@ void BaseMenuStyle::ClientPressedKey(int client, unsigned int key_press)
 							0, 
 							PITCH_NORM, 
 #if SOURCE_ENGINE == SE_CSS || SOURCE_ENGINE == SE_HL2DM || SOURCE_ENGINE == SE_DODS \
-	|| SOURCE_ENGINE == SE_SDK2013 || SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_TF2 || SOURCE_ENGINE == SE_PVKII
+	|| SOURCE_ENGINE == SE_SDK2013 || SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_TF2 || SOURCE_ENGINE == SE_PVKII || SOURCE_ENGINE == SE_CSSO
 							0,
 #endif
 							&pos);
