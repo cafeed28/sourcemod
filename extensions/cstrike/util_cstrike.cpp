@@ -440,6 +440,7 @@ void CreateHashMaps()
 		const char* name = (const char*)((intptr_t)info + iNameOffset);
 		int price = *(int*)((intptr_t)info + iPriceOffset);
 		SMCSWeapon iWeaponID = GetWeaponIdFromName(name);
+		if (iWeaponID == SMCSWeapon_NONE) continue;
 
 		ItemDefHashValue hash(-1, price, iWeaponID, iItemDefIdx, name);
 
