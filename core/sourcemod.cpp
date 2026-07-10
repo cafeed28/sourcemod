@@ -301,6 +301,7 @@ static std::string MapEntitiesToString(const KeyValues* pKVMapEntitiesIn)
 
 static bool MapEntitiesFromString(KeyValues *pKVMapEntities, char const *pMapEntities)
 {
+	pKVMapEntities->Clear();
 	pKVMapEntities->SetName("Entities");
 
 	std::istringstream mapEntities(pMapEntities);
